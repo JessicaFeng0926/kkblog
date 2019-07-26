@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>个人中心-kkblog</title>
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/personal-center.css"/>
+	</head>
+	<body>
+		<!--下面是导航条-->
+	  <nav>
+	        <div id='nav-left'>
+            <img id='logo' src='img/logo.jpg'/>
+            <a id='square' href='index.html'>博客广场</a>
+            <div id='search-box'>
+            <form class="form-inline">
+                <div class="form-group">     
+                        <input type="password" class="form-control input-sm" id="inputsearch" placeholder="请输入您感兴趣的内容">     
+                </div>
+                <button type="submit" class="btn btn-default btn-sm">搜索</button>
+            </form>
+            </div>
+            </div>
+            <div id='nav-right'>
+            <a>写博客</a>
+            <a>消息</a>
+            <a id='login'>[登录]</a>
+            <a>[注册]</a>
+            <a>jessicafeng</a>
+            <a>[退出]</a>
+            </div>
+            
+        </nav>
+        
+        <!--下面是左边的个人中心二级目录-->
+        <ul id='left'>
+            <li>个人中心</li>
+            <li class='active1'><a href='personal-center.html'>个人资料</a></li>
+            <li><a href='personal-center-myblogs.html'>我的博客</a></li>
+            <li><a href='personal-center-following.html'>我的关注</a></li>
+            <li><a href='personal-center-followers.html'>我的粉丝</a></li>
+            <li><a>我的收藏</a></li>
+            <li><a>我的消息</a></li>
+        </ul>
+        <!--下面是右侧的个人资料展示区-->
+        <dl id='right'>
+        	<dt>个人信息</dt>
+        	<dd>
+        		<form class="form-horizontal">
+        			<div class="form-group">
+        				<div class='col-sm-offset-2'>
+        				    <img id='image-preview' src='img/jg.jpg' class='img-circle'/>
+        				</div>	
+        			</div>
+        			<div class="form-group">
+    					<label for="image" class="col-sm-2 control-label">头像</label>
+    					<div class="col-sm-9">
+      						<input type="file" class="form-control" id="image">
+    					</div>
+  					</div>
+                    <div class="form-group">
+    					<label for="nickname" class="col-sm-2 control-label">昵称</label>
+    					<div class="col-sm-9">
+      						<input type="text" class="form-control" id="nickname" placeholder="请输入您的昵称">
+    					</div>
+  					</div>
+  					<div class="form-group">
+    					<label for="birthday" class="col-sm-2 control-label">生日</label>
+    					<div class="col-sm-9">
+      						<input type="date" class="form-control" id="birthday" />
+    					</div>
+  					</div>
+  					<div class="form-group">
+    					<label  class="col-sm-2 control-label">性别</label>
+    					<div class="col-sm-9">
+    						<label class="radio-inline">
+                                <input type="radio" id="inlineradio1" name='gender' value="boy">男
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" id="inlineradio2" name='gender' value="girl">女
+                            </label>
+    					</div>
+  					</div>
+  					<div class="form-group">
+    					<label for="address" class="col-sm-2 control-label">地址</label>
+    					<div class="col-sm-9">
+      						<input type="text" class="form-control" id="address" placeholder="请输入您的地址">
+    					</div>
+  					</div>
+  					<div class="form-group">
+    					<label for="phone" class="col-sm-2 control-label">手机号</label>
+    					<div class="col-sm-9">
+      						<input type="number" class="form-control" id="phone" placeholder="请输入您的手机号">
+    					</div>
+  					</div>
+  					<div class="form-group" id='email-box'>
+    					<label for="email" class="col-sm-2 control-label">邮箱</label>
+    					<div class="col-sm-8">
+      						<input type="email" class="form-control col-sm-10" id="email" value='2276810913@qq.com' placeholder="请输入您的邮箱" readonly>	
+    					</div>
+    					<label id='modify' class='control-label col-sm-2'><a>[修改]</a></label>
+    					
+  					</div>
+  					<div class="form-group" id='email-box'>
+    					<label class="col-sm-2 control-label">注册日期</label>
+    					<label class="col-sm-2 control-label">2019年7月26日</label>
+    					</div>
+    					
+    					
+  					</div>
+                    
+            		<div class="form-group">
+    					<div class="col-sm-offset-2 col-sm-10">
+      						<button type="submit" class="btn btn-default" id='save'>保存修改</button>
+    					</div>
+					</div>
+				</form>
+        	</dd>
+        </dl>
+        
+		
+		<script type="text/javascript" src="js/jquery-3.4.0.min.js" ></script>
+	    <script src="js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+	    <script type="text/javascript" src="js/index.js" ></script>
+	</body>
+</html>
