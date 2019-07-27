@@ -87,6 +87,7 @@ nav a{
     display:flex;
     flex-direction: row;
     justify-content: space-around;
+    font-size:0.1rem;
 }
 
 
@@ -96,6 +97,7 @@ nav a{
    position:fixed;
    top:1rem;
    left:0.5rem;
+   font-size:0.1rem;
    
 }
 

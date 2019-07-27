@@ -76,6 +76,7 @@ nav a{
    position:fixed;
    top:1rem;
    left:1.5rem;
+   font-size:0.1rem;
    
 }
 
@@ -104,6 +105,7 @@ nav a{
 #right{
 	margin-top:1rem;
 	margin-left:2.5rem;
+	font-size:0.1rem;
 }
 dt{
    background-color:#e7e7e7;

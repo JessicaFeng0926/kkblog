@@ -65,14 +65,12 @@ nav a{
     width:0.6rem;
 }
 
-/*下面是登录页面的个性化设置*/
-
+/*下面是博客创作区表单的样式*/
 .form-horizontal{
-	
 	margin-top:1rem;
 	font-size:0.1rem;
 }
 
-#submit-btn{
-	background-color: greenyellow;
+#saveandpost{
+	background-color:greenyellow;
 }

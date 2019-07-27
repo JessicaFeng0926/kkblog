@@ -67,85 +67,88 @@ nav a{
 }
 
 
+/*下满是主体内容section的样式*/
+#main{
+	margin-top:1rem;
+    height:auto;
+    width:10rem;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-around;
+    font-size:0.1rem;
+}
 
 
+/*下面是左侧博主信息的样式*/
+#left {
+	height:2rem;
+	width:1.5rem;
+	display:flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+    justify-content: center;
+    align-content: space-around;	
+}
 
-/*下面是左侧个人中心二级目录的样式*/
-#left{
-   list-style: none;
-   position:fixed;
-   top:1rem;
-   left:1.5rem;
-   font-size:0.1rem;
+
+#left a{
+	width:1.5rem;
+	text-align: center;
+}
+#left img{
+	height:1rem;
+	width:1rem;
+}
    
-}
-
-#left li:first-child{
-     border-radius:5px 5px 0 0 ;
-     background-color:greenyellow;
-}
-
-#left li:last-child{
-     border-radius:0 0 5px 5px ;
-}
-#left li{
-    border:1px solid #777777;
-    text-align: center;
-    width:0.8rem;
-    height:0.4rem;
-    line-height:0.4rem;
-}
 
 .active1{
     font-weight: bold;
 }
 
-/*下面是右侧全部关注人的样式*/
 
-#right{
-	margin-top:1rem;
-	margin-left:2.5rem;
-	font-size:0.1rem;
-}
+/*下面是博客展示的样式*/
 dt{
    background-color:#e7e7e7;
    height:0.3rem;
-   width:6rem;
+   width:5rem;
    text-align: center;
    border-radius: 5px 5px 0 0;
    line-height: 0.3rem;
 }
 
 dd{
-   height:2rem;
-   width:2rem;
-   float:left;
-   display:flex;
-   flex-direction: row;
-   justify-content: space-around;
-   flex-wrap: wrap;
-   align-content: space-around;
+   height:0.6rem;
+   width:5rem;
+   overflow: hidden;
+   border-left:1px solid #e7e7e7;
+   border-right:1px solid #e7e7e7;
+   border-bottom: 1px solid #e7e7e7;
+   border-radius: 0 0 5px 5px;
 }
 
-/*下面是每个关注人信息的样式*/
-dd img{
-	width:1rem;
-	height:1rem;
+.collect{
+	color:cornflowerblue;
 }
 
-dd a{
-	width:1.5rem;
+.collect:hover{
+	color:blue;
+}
+/*下面是右侧博客分类的样式*/
+#right ul{
+	list-style: none;
+	width:1.2rem;
+	height:1.5rem;
+	overflow-y: scroll;
+	overflow-x:hidden;
+}
+
+#right li{
 	text-align: center;
 }
-
-dd span{
-	color:red;
+h3{
+	background-color:greenyellow;
+	text-align: center;
+	border-radius: 5px;
 }
 
-dl p{
-	margin:0.2rem;
-}
 
-dl p a{
-	text-decoration: underline;
-}

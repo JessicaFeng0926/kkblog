@@ -2,9 +2,10 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>我的博客-kkblog</title>
+		<title>我的消息-kkblog</title>
 		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
 		<link rel="stylesheet" type="text/css" href="css/personal-center-myblogs.css"/>
+		<link rel="stylesheet" href="css/personal-center-messages.css" />
 	</head>
 	<body>
 		<!--下面是导航条-->
@@ -31,75 +32,68 @@
             </div>
             
         </nav>
+        <!--下面是上方用于遮挡的白条-->
+        <div id='hide'>
+        	
+        </div>
         
         <!--下面是左边的个人中心二级目录-->
         <ul id='left'>
             <li>个人中心</li>
             <li><a href='personal-center.html'>个人资料</a></li>
-            <li class='active1'><a href='personal-center-myblogs.html'>我的博客</a></li>
+            <li><a href='personal-center-myblogs.html'>我的博客</a></li>
             <li><a href='personal-center-following.html'>我的关注</a></li>
             <li><a href='personal-center-followers.html'>我的粉丝</a></li>
             <li><a href='personal-center-mycollections.html'>我的收藏</a></li>
-            <li><a href='personal-center-messages.html'>我的消息</a></li>
+            <li class='active1'><a href='personal-center-messages.html'>我的消息</a></li>
         </ul>
         
-        <!--下面是博客和博客分类区域-->
+        <!--下面是消息区域-->
         <section id="main">
-        <!--下面是中间展示的博客-->   
+        	<ul id='blogs-sort'>
+                <li class='active2'><a>未读↓</a></li>
+                <li ><a>已读↓</a></li>
+                <li ><a>全部↓</a></li>
+            </ul>
+        <!--下面是中间展示的消息-->   
             <div id='blogs-display'>
 		        <dl>
-		            <dt class='blog-title'><a href='personal-center-myblog-detail.html'>这是博客的标题</a><a class='edit' href='edit-blog.html'>[修改]</a><a class='delete-btn'>[删除]</a></dt>
-		            <dd><a href='personal-center-myblog-detail.html'>这是博客的正文</a></dd>
+		            <dt class='msg-title'><a>高嘉朗评论了你的博文《Python实现快速排序》</a><a class='delete-msg'>[删除]</a></dt>
+		            <dd><a>感谢博主分享！</a></dd>
 		        </dl>
 		        <dl>
-		            <dt>这是博客的标题</dt>
-		            <dd>这是博客的正文</dd>
+		            <dt>李鑫一点赞了你的博文《Python实现快速排序》</dt>
+		            <dd>去看看他的主页吧<a href='blogs-list.html' class='his-page'>李鑫一</a></dd>
 		        </dl>
 		        <dl>
-		            <dt>这是博客的标题</dt>
-		            <dd>这是博客的正文</dd>
+		            <dt><a href='personal-center-followers.html'>李鑫一关注了你</a></dt>
+		            <dd>去看看他的主页吧<a>李鑫一</a></dd>
 		        </dl>
 		        <dl>
-		            <dt>这是博客的标题</dt>
-		            <dd>这是博客的正文</dd>
+		            <dt>系统通知</dt>
+		            <dd>征文大赛倒计时10天！</dd>
 		        </dl>
 		        <dl>
-		            <dt>这是博客的标题</dt>
-		            <dd>这是博客的正文</dd>
+		            <dt>系统通知</dt>
+		            <dd>欢迎登录</dd>
 		        </dl>
 		        <dl>
-		            <dt>这是博客的标题</dt>
-		            <dd>这是博客的正文</dd>
+		            <dt>系统通知</dt>
+		            <dd>您的密码已修改</dd>
 		        </dl>
 	        </div>
 	         
         </div><!--这是middle的结尾-->
         
-        <!--下面是右侧热门博主-->
+        <!--下面是右侧消息分类-->
         <div id='right'>
-            <h3>按时间分类</h3>
+            <h3>消息分类</h3>
             <ul>
-                <li><a>2019年7月</a></li>
-                <li><a>2019年6月</a></li>
-                <li><a>2019年5月</a></li>
+                <li class='active1'><a>评论<span class='badge'>1</span></a></li>
+                <li><a>点赞</a></li>
+                <li><a>关注</a></li>
+                <li><a>系统通知</a></li>
             </ul>
-            <h3>按主题分类</h3>
-            <ul>
-                <li><a>HTML学习</a></li>
-                <li><a>Linux学习</a></li>
-                <li><a>Python学习</a></li>
-            </ul>
-            <form>
-                <div class="form-group">
-                   <label for="new-topic">新建主题</label>
-                   <input type="text" class="form-control" id="new-file" placeholder="请输入新主题">
-                </div>
-                <button type="submit" class="btn btn-default">新建</button>
-            </form>
-            
-                
-            
-        	
         </div>
         	
 		</section>
@@ -107,6 +101,6 @@
 		<script type="text/javascript" src="js/jquery-3.4.0.min.js" ></script>
 	    <script src="js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
 	    <script type="text/javascript" src="js/index.js" ></script>
-	    <script src="js/personal-center-myblogs.js" type="text/javascript" charset="utf-8"></script>
+	    <script src="js/personal-center-messages.js" type="text/javascript" charset="utf-8"></script>
 	</body>
 </html>
