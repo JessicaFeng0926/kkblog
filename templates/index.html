@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block title %}首页{% endblock title %}
+{% block mycss %} <link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}"/> {% endblock mycss %}
+
+{% block content %}
+<div id='hide'>
+        	
+</div>
+
+<!--下面是左边的博客分类-->
+<ul id='left'>
+    <li>博客分类</li>
+    <li class='active1'><a>全部</a></li>
+    <li><a>文学</a></li>
+    <li><a>艺术</a></li>
+    <li><a>情感</a></li>
+    <li><a>科技</a></li>
+    <li><a>健康</a></li>
+    <li><a>美妆</a></li>
+    <li><a>其他</a></li>
+    
+
+</ul>
+
+<section id='main'>
+<!--下面是中间展示的博客-->
+<div id='middle'>
+    <ul id='blogs-sort'>
+        <li class='active2'><a>最热↓</a></li>
+        <li ><a>最新↓</a></li>
+    </ul>
+    
+    <div id='blogs-display'>
+    <dl>
+        <dt><a href='blog-detail.html'>这是博客的标题</a></dt>
+        <dd><a href='blog-detail.html'>这是博客的正文</a></dd>
+    </dl>
+    <dl>
+        <dt>这是博客的标题</dt>
+        <dd>这是博客的正文</dd>
+    </dl>
+    <dl>
+        <dt>这是博客的标题</dt>
+        <dd>这是博客的正文</dd>
+    </dl>
+    <dl>
+        <dt>这是博客的标题</dt>
+        <dd>这是博客的正文</dd>
+    </dl>
+    <dl>
+        <dt>这是博客的标题</dt>
+        <dd>这是博客的正文</dd>
+    </dl>
+    <dl>
+        <dt>这是博客的标题</dt>
+        <dd>这是博客的正文</dd>
+    </dl>
+    </div>
+     
+</div><!--这是middle的结尾-->
+<!--下面是右侧热门博主-->
+<div id='right'>
+    <P><img src="{% static 'img/rankgold.png' %}"/>热门博主</p>
+    <ul>
+        <li><a><img class='img-circle' src='img/jg.jpg'/></a></li>
+        <li><a>无衣</a></li>
+    
+    </ul>
+    <ul>
+        <li><img class='img-circle' src='img/jg.jpg'/></li>
+        <li><a>无衣</a></li>
+    
+    </ul>
+    
+</div>
+
+</section>
+{% endblock content %}
+        
+		
+   

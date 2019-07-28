@@ -1,0 +1,62 @@
+/*导航条下面放了一个白色的div，为了遮挡滑到上面的博客内容*/
+#hide{
+    width:10rem;
+    height:0.8rem;
+    position:fixed;
+    background-color:white;
+    top:0.5rem;
+    left:0;
+
+}
+
+.active2{
+    border-bottom: 3px solid #777777;
+}
+
+/*下面是未读、已读和全部排序规则的样式*/
+#blogs-sort{
+    list-style: none;
+    position:fixed;
+    top:1rem;
+    left:2.5rem;
+}
+
+#blogs-sort li{
+    width:0.5rem;
+    height:0.3rem;
+    line-height:0.3rem;
+    float:left;
+    text-align: center;
+}
+
+#blogs-sort li:first-child{
+      border-right:1px solid #777777;
+}
+
+#blogs-sort li:nth-child(2){
+	 border-right:1px solid #777777;
+}
+#blogs-display{
+     margin-top:0.5rem;
+}
+
+/*下面是删除按钮的样式*/
+.delete-msg{
+	color:cornflowerblue;
+	display:none;
+}
+
+.delete-msg:hover{
+	color:blue;
+}
+
+/*下面是建议去广场的人名a标签的样式*/
+
+.his-page{
+	font-weight: bold;
+	text-decoration: underline;
+}
+/*下面是右边的消息分类的样式*/
+#right{
+    margin-top:0.4rem;
+}

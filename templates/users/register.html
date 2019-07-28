@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block title %}注册{% endblock title %}
+{% block mycss %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/login.css'%}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/register.css'%}"/>
+{% endblock mycss%}
+
+{% block content%}
+<!--下面是注册表单-->
+<form class="form-horizontal col-sm-offset-2 col-sm-6"  action="{% url 'users:register'%}" method="POST">
+	{% csrf_token %}
+	<div class="form-group">
+		<label for="inputEmail3" class="col-sm-2 control-label">邮箱</label>
+		<div class="col-sm-10">
+			<input type="email" class="form-control" id="inputEmail3" placeholder="请输入您的邮箱" name='email'>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="inputPassword3" class="col-sm-2 control-label">密码</label>
+		<div class="col-sm-10">
+			<input type="password" class="form-control" id="inputPassword3" placeholder="请输入您的密码" name='password'>
+		</div>
+	  </div>
+	  
+		<div class='col-sm-offset-2'>
+			<p id='msg-p'>{{msg}}</p>
+		{%  for k,v in user_register_form.errors.items %}
+           {{v}}
+		{% endfor %}
+		</div>
+	  
+	  <div class="form-group">
+		<label for="inputPassword4" class="col-sm-2 control-label">确认密码</label>
+		<div class="col-sm-10">
+			<input type="password" class="form-control" id="inputPassword4" placeholder="请再次输入您的密码" name='password1'>
+		</div>
+	  </div>
+	  <div class="form-group">
+			<label  for='id_captcha_1' class="col-sm-2 control-label">验证码</label>
+			<div class="col-sm-10">
+				{{user_register_form.captcha}}
+			</div>
+		</div>
+	  <div class="col-sm-offset-2 col-sm-10">
+		<label class='control-label'></label>
+	  </div>
+	  
+	  <div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+				<br/>
+			  <button type="submit" class="btn btn-default" id='submit-btn'>注册</button>
+		</div>
+	  </div>
+</form>
+{% endblock content %}
+
+{% block myjs %}
+<script>
+$(function(){
+	//为了实现点击就能刷新验证码，必须用ajax来做
+    $('img.captcha').click(function() {
+			$.getJSON('/captcha/refresh/',function(json) {
+                // This should update your captcha image src and captcha hidden input
+				//console.log(json);
+				$("img.captcha").attr("src",json.image_url);
+				$("#id_captcha_0").val(json.key);
+			});
+ 
+			return false;
+		});
+
+})//这是最外面的function的结尾
+</script>
+{% endblock myjs %}

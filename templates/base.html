@@ -1,0 +1,55 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>{% block title%}{% endblock title%}-kkblog</title>
+		<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}"/>
+		{% block mycss%}{% endblock mycss%}
+	</head>
+	<body>
+	    <!--下面是导航条-->
+	    <nav>
+	        <div id='nav-left'>
+            <img id='logo' src="{% static 'img/logo.jpg'%}"/>
+            <a id='square' href='/'>博客广场</a>
+            <div id='search-box'>
+            <form class="form-inline">
+                <div class="form-group">
+                        <input type="text" class="form-control input-sm" id="inputsearch" placeholder="请输入您感兴趣的内容">   
+                </div>
+                <button type="submit" class="btn btn-default btn-sm">搜索</button>
+            </form>
+            </div>
+            </div>
+            <div id='nav-right'>
+            <a href='write-blog.html'>写博客</a>
+            <a href='personal-center-messages.html'>消息<span class='badge'>1</span></a>
+            {% if request.user.is_authenticated %}
+            
+              {% if request.user.nickname%}
+              <a href='personal-center.html' title='{{request.user.nickname}}'>{{request.user.nickname|slice:':8'}}</a>
+              {% else %}
+              <a href='personal-center.html' title='{{request.user.username}}'>{{request.user.username|slice:':8'}}</a> 
+              {% endif %}
+            </a>
+            <a href="{% url 'users:logout' %}">[退出]</a>
+            {% else %}
+            <a id='login' href="{% url 'users:login' %}">[登录]</a>
+            <a href="{%url 'users:register'%}">[注册]</a>
+            {% endif %}
+            </div>
+            
+        </nav>
+        
+    {% block content %}
+        
+    {% endblock content %}
+    
+    <script type="text/javascript" src="{% static 'js/jquery-3.4.0.min.js' %}" ></script>
+    <script src="{% static 'js/bootstrap.min.js' %}" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="{% static 'js/index.js' %}" ></script>
+	{% block myjs%}{% endblock myjs%}
+	</body>
+	
+</html>
