@@ -75,6 +75,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                #有下面这一句才能在模板里使用{{MEDIA_URL}}
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -151,8 +153,8 @@ MEDIA_ROOT=os.path.join(BASE_DIR,'static/media')
 EMAIL_HOST='smtp.qq.com'
 EMAIL_PORT=25
 #为了安全，删除了qq邮箱，每天第一件事记得加回来
-EMAIL_HOST_USER='@qq.com'
+EMAIL_HOST_USER='2276810913@qq.com'
 #我的授权码因为更改邮箱密码所以过期了
 EMAIL_HOST_PASSWORD='ehayjedqavfteccf'
 EMAIL_USE_TLS=True
-EMAIL_FROM='@qq.com'
+EMAIL_FROM='2276810913@qq.com'

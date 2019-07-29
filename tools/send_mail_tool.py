@@ -20,15 +20,20 @@ def send_email_code(email,send_type):
     evc.email=email
     evc.send_type=send_type
     evc.save()
-
+    
+    send_title=''
+    send_body=''
     #第二步，根据发送类型发送邮件
 
     if send_type==1:
         send_title='欢迎注册kkblog'
-        send_body='请点击下面的链接完成账号激活:\n'+'http://127.0.0.1:8000/users/user_activate/'+code
+        send_body='请点击下面的链接完成账号激活:\n'+'http://127.0.0.1:8000/users/user_activate/'+code+'\n注意：链接有效时长为5分钟，激活完成会自动跳转到登录页面。'
         send_mail(send_title,send_body,EMAIL_FROM,[email])
     
-
+    if send_type==2:
+        send_title='kkblog重置密码'
+        send_body='请点击下面的链接重置密码：\n'+'http://127.0.0.1:8000/users/reset/'+code+'\n注意：链接有效时长为5分钟，重置完成会自动跳转到登录页面。'
+        send_mail(send_title,send_body,EMAIL_FROM,[email])
 
 
 

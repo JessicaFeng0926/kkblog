@@ -81,4 +81,12 @@ nav a{
 	height:0.2rem;
 }
 
+.errorlist{
+    color:red;
+    font-size:0.08rem;
+}
 
+#msg-p{
+    color:red;
+    font-size: 0.08rem;
+}

@@ -28,9 +28,9 @@
             {% if request.user.is_authenticated %}
             
               {% if request.user.nickname%}
-              <a href='personal-center.html' title='{{request.user.nickname}}'>{{request.user.nickname|slice:':8'}}</a>
+              <a href="{% url 'users:pc' %}" title='{{request.user.nickname}}'>{{request.user.nickname|slice:':8'}}</a>
               {% else %}
-              <a href='personal-center.html' title='{{request.user.username}}'>{{request.user.username|slice:':8'}}</a> 
+              <a href="{% url 'users:pc' %}" title='{{request.user.username}}'>{{request.user.username|slice:':8'}}</a> 
               {% endif %}
             </a>
             <a href="{% url 'users:logout' %}">[退出]</a>

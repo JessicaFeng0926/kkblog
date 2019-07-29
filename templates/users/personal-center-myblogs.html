@@ -1,76 +1,27 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>我的博客-kkblog</title>
-		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
-		<link rel="stylesheet" type="text/css" href="css/personal-center-myblogs.css"/>
-	</head>
-	<body>
-		<!--下面是导航条-->
-		<nav>
-	        <div id='nav-left'>
-            <img id='logo' src='img/logo.jpg'/>
-            <a id='square' href='index.html'>博客广场</a>
-            <div id='search-box'>
-            <form class="form-inline">
-                <div class="form-group">     
-                        <input type="password" class="form-control input-sm" id="inputsearch" placeholder="请输入您感兴趣的内容">     
-                </div>
-                <button type="submit" class="btn btn-default btn-sm">搜索</button>
-            </form>
-            </div>
-            </div>
-            <div id='nav-right'>
-            <a href='write-blog.html'>写博客</a>
-            <a href='personal-center-messages.html'>消息</a>
-            <a id='login' href='login.html'>[登录]</a>
-            <a href='register.html'>[注册]</a>
-            <a href='personal-center.html'>jessicafeng</a>
-            <a>[退出]</a>
-            </div>
-            
-        </nav>
-        
-        <!--下面是左边的个人中心二级目录-->
-        <ul id='left'>
-            <li>个人中心</li>
-            <li><a href='personal-center.html'>个人资料</a></li>
-            <li class='active1'><a href='personal-center-myblogs.html'>我的博客</a></li>
-            <li><a href='personal-center-following.html'>我的关注</a></li>
-            <li><a href='personal-center-followers.html'>我的粉丝</a></li>
-            <li><a href='personal-center-mycollections.html'>我的收藏</a></li>
-            <li><a href='personal-center-messages.html'>我的消息</a></li>
-        </ul>
-        
-        <!--下面是博客和博客分类区域-->
-        <section id="main">
+{% extends 'base2.html'%}
+{% load staticfiles %}
+{% block title %}我的博客{% endblock title %}
+{% block mycss%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/personal-center-myblogs.css' %}"/>
+{% endblock mycss%}
+
+{% block content %}
+<!--下面是博客和博客分类区域-->
+<section id="main">
         <!--下面是中间展示的博客-->   
             <div id='blogs-display'>
+                {% for blog in blog_list%}
 		        <dl>
-		            <dt class='blog-title'><a href='personal-center-myblog-detail.html'>这是博客的标题</a><a class='edit' href='edit-blog.html'>[修改]</a><a class='delete-btn'>[删除]</a></dt>
-		            <dd><a href='personal-center-myblog-detail.html'>这是博客的正文</a></dd>
-		        </dl>
+		            <dt class='blog-title'><a href='personal-center-myblog-detail.html'>{{blog.blog_title}}</a><a class='edit' href='edit-blog.html'>[修改]</a><a class='delete-btn'>[删除]</a></dt>
+		            <dd><a href='personal-center-myblog-detail.html'>{{blog.blog_text}}</a></dd>
+                </dl>
+                {% empty %}
 		        <dl>
-		            <dt>这是博客的标题</dt>
-		            <dd>这是博客的正文</dd>
-		        </dl>
-		        <dl>
-		            <dt>这是博客的标题</dt>
-		            <dd>这是博客的正文</dd>
-		        </dl>
-		        <dl>
-		            <dt>这是博客的标题</dt>
-		            <dd>这是博客的正文</dd>
-		        </dl>
-		        <dl>
-		            <dt>这是博客的标题</dt>
-		            <dd>这是博客的正文</dd>
-		        </dl>
-		        <dl>
-		            <dt>这是博客的标题</dt>
-		            <dd>这是博客的正文</dd>
-		        </dl>
+		            <dt>没有内容</dt>
+		            <dd>快去写一篇博客吧<a href="#" style="font-weight: bold;text-decoration: underline">写博客</a></dd>
+                </dl>
+                {% endfor %}
+		        
 	        </div>
 	         
         </div><!--这是middle的结尾-->
@@ -79,15 +30,16 @@
         <div id='right'>
             <h3>按时间分类</h3>
             <ul>
-                <li><a>2019年7月<span class='badge'>4</span></a></li>
-                <li><a>2019年6月<span class='badge'>3</span></a></li>
-                <li><a>2019年5月<span class='badge'>1</span></a></li>
+                {% for time in time_list %}
+                <li><a>{{time.0}}年{{time.1}}月<span class='badge'>4</span></a></li>
+                {% endfor %}
+                
             </ul>
             <h3>按主题分类</h3>
             <ul>
-                <li><a>HTML学习<span class='badge'>5</span></a></li>
-                <li><a>Linux学习<span class='badge'>3</span></a></li>
-                <li><a>Python学习<span class='badge'>0</span></a><span class='glyphicon glyphicon-trash'></span></li>
+                {%for topic in topic_list%} 
+                <li><a>{{topic.topic_name|slice:':8'}}<span class='badge'>{{topic.blog_set.all.count}}</span></a>{% if topic.blog_set.all.count == 0  and  not topic.is_default %}<span class='glyphicon glyphicon-trash'></span>{% endif %}</li>
+                {% endfor %}
             </ul>
             <form>
                 <div class="form-group">
@@ -95,18 +47,17 @@
                    <input type="text" class="form-control" id="new-file" placeholder="请输入新主题">
                 </div>
                 <button type="submit" class="btn btn-default">新建</button>
-            </form>
-            
-                
-            
+            </form>          
         	
         </div>
         	
 		</section>
+{% endblock content %}
+
+{% block myjs %}
+<script src="{% static 'js/personal-center-myblogs.js'%}" type="text/javascript" charset="utf-8"></script>
+{% endblock myjs %}
+
+        
+        
 		
-		<script type="text/javascript" src="js/jquery-3.4.0.min.js" ></script>
-	    <script src="js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
-	    <script type="text/javascript" src="js/index.js" ></script>
-	    <script src="js/personal-center-myblogs.js" type="text/javascript" charset="utf-8"></script>
-	</body>
-</html>

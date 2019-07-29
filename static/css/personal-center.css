@@ -142,3 +142,13 @@ dd{
 #modify{
 	text-align: left;
 }
+
+.errorlist{
+    color:red;
+    font-size:0.08rem;
+}
+
+#msg-p{
+    color:red;
+    font-size:0.08rem;
+}
