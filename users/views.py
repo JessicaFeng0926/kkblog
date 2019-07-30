@@ -1,9 +1,9 @@
 from django.shortcuts import render,redirect,reverse
 from django.views import View
-from .forms import UserRegisterForm,UserLoginForm,UserForgetForm,UserResetForm,UserPersonalCenterForm
+from .forms import UserRegisterForm,UserLoginForm,UserForgetForm,UserResetForm,UserPersonalCenterForm,NewTopicForm
 from .models import UserProfile,EmailVerifyCode
-from blogs.models import Topic,CollectBookMark
-from blogs.models import Blog,Topic
+from blogs.models import Topic,CollectBookMark,Blog
+from operations.models import UserThumbup
 from django.db.models import Q
 from django.contrib.auth import authenticate,login,logout
 from tools.send_mail_tool import send_email_code
@@ -228,24 +228,133 @@ class UserPersonalCenterView(View):
         else:
             return render(request,'users/personal-center.html',{'user_pc_form':user_pc_form,'msg':'修改失败'})
 
+def get_data_list(user):
+    '''这是我的博客页面获取需要的所有信息的函数'''
+    topic_list=Topic.objects.filter(owner=user).order_by('addtime')
+    blog_list=Blog.objects.filter(author=user,is_delete=False).order_by('addtime')
+    """ #因为不需要显示没有写博客的月份，所以其实日期不用注册时间了，用第一篇博客的创作时间
+    start=blog_list[0].addtime
+    end=datetime.now()
+    month_num=12*(end.year-start.year)+end.month-start.month
+    time_list=[]
+    year=start.year
+    month=start.month
+    #b是我们遍历blog_list的起点，因为已经遍历过的就不想重复遍历，所以b会随着count一起增长
+    b=0
+    for m in range(month_num+1):
+        #count用于计算本月份有多少篇博客
+        count=0
+        for blog in blog_list[b:]:
+            if blog.addtime.year==year and blog.addtime.month==month:
+                count+=1
+        #当本月的博客数量不为0时，把这个月份和这个月的博客数作为数据传回前端
+        if count!=0:
+            time_list.append([year,month,count])
+        b+=count
+        month+=1
+        if month==13:
+            month=1
+            year+=1 """
+    #以第一篇博客的年和月开头
+    time_list=[]
+    if blog_list:
+        year=blog_list[0].addtime.year
+        month=blog_list[0].addtime.month
+        #count是快指针，year和month是慢指针
+        count=0
+        
+        for blog in blog_list:
+            if blog.addtime.year==year and blog.addtime.month==month:
+                count+=1
+            else:
+                time_list.append([year,month,count])
+                count=1
+                year=blog.addtime.year
+                month=blog.addtime.month
+        #别忘了最后还要append一次，因为最后的那个年和月不会再有别的年月跟它比较了，走不到else分支，所以没办法在循环内append
+        time_list.append([year,month,count])
+        time_list.reverse()
+    print(time_list)
+    blog_list=blog_list.order_by('-addtime')
+    return [topic_list,blog_list,time_list]
+
+
 class MyblogsView(View):
     '''这是我的博客的视图类'''
     def get(self,request):
-        topic_list=Topic.objects.filter(owner=request.user).order_by('addtime')
-        blog_list=Blog.objects.filter(author=request.user)
-        start=request.user.addtime
-        end=datetime.now()
-        month_num=12*(end.year-start.year)+end.month-start.month
-        time_list=[]
-        year=start.year
-        month=start.month
-        for m in range(month_num+1):
-            time_list.append([year,month])
-            month+=1
-            if month==13:
-                month=1
-                year+=1
-        time_list.reverse()
-        return render(request,'users/personal-center-myblogs.html',{'topic_list':topic_list,'blog_list':blog_list,'time_list':time_list})
-
+        #下面是默认需要获取的全部数据，包括全部主题，全部博客和全部月份
+        data_list=get_data_list(request.user)
+        topic_list=data_list[0]
+        blog_list=data_list[1]
+        time_list=data_list[2]
+        #如果用户点击了某个主题，那么就按照主题进一步筛选该主题下的博客
+        topic_id=request.GET.get('topic','')
+        if topic_id:
+            topic_id=int(topic_id)
+            blog_list=blog_list.filter(blog_topic_id=topic_id)
+        #如果用户点击了某个月份，就要删选这个月的博客
+        year=request.GET.get('year','')
+        month=request.GET.get('month','')
+        if year and month:
+            year=int(year)
+            month=int(month)
+            blog_list_copy=blog_list[:]
+            blog_list=[]
+            for blog in blog_list_copy:
+                if blog.addtime.year==year and blog.addtime.month==month:
+                    blog_list.append(blog)
+        return render(request,'users/personal-center-myblogs.html',{'topic_list':topic_list,'blog_list':blog_list,'time_list':time_list,'topic_id':topic_id,'year':year,'month':month})
+    def post(self,request):
+        '''这是处理用户post新建话题的方法'''
+        new_topic_form=NewTopicForm(request.POST)
+        data_list=get_data_list(request.user)
+        topic_list=data_list[0]
+        blog_list=data_list[1]
+        time_list=data_list[2]
+        if new_topic_form.is_valid():
+            topic_name=new_topic_form.cleaned_data['topic_name']
+            new_topic=Topic()
+            new_topic.topic_name=topic_name
+            new_topic.owner=request.user
+            new_topic.save()
+            return render(request,'users/personal-center-myblogs.html',{'topic_list':topic_list,'blog_list':blog_list,'time_list':time_list})
+        else:
+            return render(request,'users/personal-center-myblogs.html',{'new_topic_form':new_topic_form,'topic_list':topic_list,'blog_list':blog_list,'time_list':time_list})
         
+class MyBlogDetailView(View):
+    '''这是我的博客详情的视图类'''
+    def get(self,request,blog_id):
+        if blog_id:
+            blog_list=Blog.objects.filter(id=int(blog_id),is_delete=False)
+            if blog_list:
+                blog=blog_list[0]
+                data_list=get_data_list(request.user)
+                topic_list=data_list[0]
+                time_list=data_list[2]
+
+                #获取博主对这篇博客的点赞状态
+                tstatus=False
+                user_thumbup_list=UserThumbup.objects.filter(oneself=request.user,thumbup_blog=blog,tstatus=True)
+                if user_thumbup_list:
+                    tstatus=True
+                return render(request,'users/personal-center-myblog-detail.html',{'blog':blog,'topic_list':topic_list,'time_list':time_list,'tstatus':tstatus})
+            else:
+                return redirect(reverse('users:myblogs'))
+
+    def post(self,request,blog_id):
+        new_topic_form=NewTopicForm(request.POST)
+        blog=Blog.objects.filter(id=int(blog_id))[0]
+        data_list=get_data_list(request.user)
+        topic_list=data_list[0]
+        time_list=data_list[2]
+        if new_topic_form.is_valid():
+            topic_name=new_topic_form.cleaned_data['topic_name']
+            new_topic=Topic()
+            new_topic.topic_name=topic_name
+            new_topic.owner=request.user
+            new_topic.save()
+            return render(request,'users/personal-center-myblog-detail.html',{'topic_list':topic_list,'time_list':time_list,'blog':blog})
+        else:
+            return render(request,'users/personal-center-myblog-detail.html',{'blog':blog,'topic_list':topic_list,'time_list':time_list,'new_topic_form':new_topic_form})
+
+

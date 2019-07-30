@@ -18,4 +18,6 @@ urlpatterns=[
     re_path(r'^personal_center/$',views.UserPersonalCenterView.as_view(),name='pc'),
     #我的博客
     re_path(r'^myblogs/$',views.MyblogsView.as_view(),name='myblogs'),
+    #我的博客详情
+    re_path(r'^myblog_detail/(\d+)/$',views.MyBlogDetailView.as_view(),name='myblog_detail'),
 ]

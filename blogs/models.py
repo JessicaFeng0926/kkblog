@@ -13,6 +13,11 @@ class Topic(models.Model):
     def __str__(self):
         '''这是返回的描述信息'''
         return self.topic_name
+    
+    def get_count(self):
+        '''这是统计每个主题写有多少篇未删除的博客的方法'''
+        blog_num=self.blog_set.filter(is_delete=False).count()
+        return blog_num
 
     class Meta:
         '''这是元信息类'''

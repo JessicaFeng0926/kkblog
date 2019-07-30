@@ -150,7 +150,7 @@ dd{
 }
 
 /*下面是右侧博客分类的样式*/
-#right ul{
+#time-sort,#topic-sort{
 	list-style: none;
 	width:1.2rem;
 	height:1.5rem;
@@ -172,4 +172,10 @@ h3{
 .glyphicon-trash:hover{
 	 color:blue;
 	 cursor:pointer;
+}
+
+.errorlist{
+    color:red;
+    font-size: 0.08rem;
+    overflow-y: hidden;
 }

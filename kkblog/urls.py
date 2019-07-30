@@ -25,4 +25,6 @@ urlpatterns = [
     re_path(r'^$',index,name='index'),
     re_path(r'^captcha/',include('captcha.urls')),
     re_path(r'^users/',include(('users.urls','users'),namespace='users')),
+    re_path(r'^blogs/',include(('blogs.urls','blogs'),namespace='blogs')),
+    re_path(r'^operations/',include(('operations.urls','operations'),namespace='operations')),
 ]

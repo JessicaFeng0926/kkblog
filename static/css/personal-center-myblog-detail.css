@@ -153,7 +153,6 @@ dt{
 	line-height: 0.5rem;
 	text-align: center;
 	font-size:0.2rem;
-	color:red;
 }
 
 .thumb-up-text{
@@ -203,7 +202,7 @@ dt{
 #right{
 	text-align: center;
 }
-#right ul{
+#time-sort,#topic-sort{
 	list-style: none;
 	width:1.2rem;
 	height:1.5rem;
@@ -223,4 +222,10 @@ h3{
 .glyphicon-trash:hover{
 	 color:blue;
 	 cursor:pointer;
+}
+
+.errorlist{
+    color:red;
+    font-size: 0.08rem;
+    list-style: none;
 }

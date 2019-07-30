@@ -70,3 +70,10 @@ class UserPersonalCenterForm(forms.ModelForm):
             else:
                 raise forms.ValidationError('手机号码不合法')
 
+class NewTopicForm(forms.Form):
+    '''这是新建主题的表单类'''
+    topic_name=forms.CharField(required=True,max_length=30,
+    error_messages={
+        'required':'主题不能为空',
+        'max_length':'主题长度不能超过30个字',
+    })
