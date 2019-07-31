@@ -66,6 +66,9 @@ nav a{
     width:0.6rem;
 }
 
+.active1{
+    font-weight: bold;
+}
 
 /*下满是主体内容section的样式*/
 #main{

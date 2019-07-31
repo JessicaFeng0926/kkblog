@@ -1,7 +1,15 @@
 #right{
 	text-align: center;
+	
 }
 
+#bookmark-sort{
+	list-style: none;
+	width:1.2rem;
+	height:1.5rem;
+	overflow-y: scroll;
+	overflow-x:hidden; 
+}
 .move{
 	color:cornflowerblue;
 	display:none;
@@ -18,4 +26,9 @@
 
 .delete-cl:hover{
 	color:blue;
+}
+
+.errorlist{
+	color:red;
+	font-size:0.08rem;
 }

@@ -149,6 +149,18 @@ dd{
 	color:blue;
 }
 
+#grade{
+    background-color:greenyellow;
+}
+
+#grade-detail{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    align-content: center;
+}
+
 /*下面是右侧博客分类的样式*/
 #time-sort,#topic-sort{
 	list-style: none;

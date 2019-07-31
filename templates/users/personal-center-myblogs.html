@@ -10,6 +10,11 @@
 <section id="main">
         <!--下面是中间展示的博客-->   
             <div id='blogs-display'>
+                    <dl>
+                        <dt id='grade'>博客成绩</dt>
+                        <dd id='grade-detail'><span>总点击量：{{request.user.visit_num}}</span><span>收获的赞：{{request.user.thumb_num}}</span>收到的评论：{{request.user.comment_num}}<span></span></dd>
+                    </dl>
+
                 {% for blog in blog_list%}
 		        <dl>
 		            <dt class='blog-title'><a href="{% url 'users:myblog_detail' blog.id%}">{{blog.blog_title}}</a><a class='edit' href='edit-blog.html'>[修改]</a><a class='delete-btn' bid="{{blog.id}}">[删除]</a></dt>

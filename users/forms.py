@@ -77,3 +77,11 @@ class NewTopicForm(forms.Form):
         'required':'主题不能为空',
         'max_length':'主题长度不能超过30个字',
     })
+
+class NewBookmarkForm(forms.Form):
+    '''这是新建收藏夹的表单类'''
+    bookmark_name=forms.CharField(required=True,max_length=30,
+    error_messages={
+        'required':'收藏夹名不能为空',
+        'max_length':'收藏夹名不能超过30个字',
+    })

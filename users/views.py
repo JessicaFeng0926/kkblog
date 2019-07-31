@@ -1,9 +1,9 @@
 from django.shortcuts import render,redirect,reverse
 from django.views import View
-from .forms import UserRegisterForm,UserLoginForm,UserForgetForm,UserResetForm,UserPersonalCenterForm,NewTopicForm
+from .forms import UserRegisterForm,UserLoginForm,UserForgetForm,UserResetForm,UserPersonalCenterForm,NewTopicForm,NewBookmarkForm
 from .models import UserProfile,EmailVerifyCode
 from blogs.models import Topic,CollectBookMark,Blog
-from operations.models import UserThumbup
+from operations.models import UserThumbup,UserFollow,UserCollect
 from django.db.models import Q
 from django.contrib.auth import authenticate,login,logout
 from tools.send_mail_tool import send_email_code
@@ -13,7 +13,11 @@ from datetime import datetime
 
 def index(request):
     '''这是主页的视图'''
-    return render(request,'index.html')
+    #按照点击量返回最热博客
+    blog_list=Blog.objects.order_by('-click_num')[:100]
+    #按照访问量返回热门博主
+    author_list=UserProfile.objects.exclude(is_superuser=True).order_by('-visit_num')[:5]
+    return render(request,'index.html',{'author_list':author_list,'blog_list':blog_list})
 
 class UserLoginView(View):
     '''这是用户登录的视图'''
@@ -328,6 +332,11 @@ class MyBlogDetailView(View):
             blog_list=Blog.objects.filter(id=int(blog_id),is_delete=False)
             if blog_list:
                 blog=blog_list[0]
+                #本篇博客和博主的点击量都加一
+                blog.click_num+=1
+                blog.save()
+                blog.author.visit_num+=1
+                blog.author.save()
                 data_list=get_data_list(request.user)
                 topic_list=data_list[0]
                 time_list=data_list[2]
@@ -357,4 +366,83 @@ class MyBlogDetailView(View):
         else:
             return render(request,'users/personal-center-myblog-detail.html',{'blog':blog,'topic_list':topic_list,'time_list':time_list,'new_topic_form':new_topic_form})
 
+class MyFollowView(View):
+    '''这是我的关注页面的视图类'''
+    def get(self,request):
+        idol_list=[]
+        #先看看用户有没有关注别人
+        userfollow_list=UserFollow.objects.filter(oneself=request.user,fstatus=True).order_by('-addtime')
+        if userfollow_list:
+            #有关注的人，就拿到所有关注人的id
+            idolid_list=[ userfollow.idol_id for userfollow in userfollow_list]
+            idol_list=UserProfile.objects.filter(id__in=idolid_list)
+            for idol in idol_list:
+                reverseuserfollow=UserFollow.objects.filter(oneself=idol,idol_id=request.user.id,fstatus=True)
+                if reverseuserfollow:
+                    idol.is_mutual=True
+                else:
+                    idol.is_mutual=False
+        return render(request,'users/personal-center-following.html',{'idol_list':idol_list})
 
+class MyFansView(View):
+    '''这是我的粉丝的视图类'''
+    def get(self,request):
+        #先看看有没有人关注我
+        userfollow_list=UserFollow.objects.filter(idol_id=request.user.id,fstatus=True)
+        #如果有，就把这些人都拿出来
+        if userfollow_list:
+            fan_list=[userfollow.oneself for userfollow in userfollow_list]
+            #再看看用户关没关注他的粉丝们，把互关状态添加进去
+            for fan in fan_list:
+                reverseuserfollow=UserFollow.objects.filter(oneself=request.user,idol_id=fan.id,fstatus=True)
+                if reverseuserfollow:
+                    fan.is_mutual=True
+                else:
+                    fan.is_mutual=False
+        return render(request,'users/personal-center-followers.html',{'fan_list':fan_list})
+
+class MyCollectionsView(View):
+    '''这是我的收藏的视图类'''
+    def get(self,request):
+        blog_list=[]
+        usercollect_list=UserCollect.objects.filter(collector=request.user,cstatus=True)
+        #如果有收藏记录
+        if usercollect_list:
+            #如果用户点击了某个收藏夹，就要进一步筛选只属于这个收藏夹的博客
+            bookmark_id=request.GET.get('bookmark','')
+            if bookmark_id:
+                bookmark_id=int(bookmark_id)
+                usercollect_list=usercollect_list.filter(bookmark_id=bookmark_id)
+
+            blog_list=[usercollect.collect_blog for usercollect in usercollect_list]
+        
+        #如果该用户从未收藏过任何博客，他也可以点收藏夹点着玩儿,还是要把收藏夹的id传回去
+        bookmark_id=request.GET.get('bookmark','')
+        if bookmark_id:
+            bookmark_id=int(bookmark_id)
+
+        #找出所有的收藏夹信息
+        bookmark_list=CollectBookMark.objects.filter(owner=request.user,is_delete=False)
+        
+        return render(request,'users/personal-center-mycollections.html',{'blog_list':blog_list,'bookmark_list':bookmark_list,'bookmark_id':bookmark_id})
+    def post(self,request):
+        '''这是处理新建收藏夹的方法'''
+        blog_list=[]
+        usercollect_list=UserCollect.objects.filter(collector=request.user,cstatus=True)
+        if usercollect_list:
+            blog_list=[usercollect.collect_blog for usercollect in usercollect_list]
+
+        #找出所有的收藏夹信息
+        bookmark_list=CollectBookMark.objects.filter(owner=request.user,is_delete=False)
+        #生成新收藏夹表单对象
+        new_bookmark_form=NewBookmarkForm(request.POST)
+        #看看是否有效
+        if new_bookmark_form.is_valid():
+            bookmark_name=new_bookmark_form.cleaned_data['bookmark_name']
+            new_bookmark=CollectBookMark()
+            new_bookmark.bookmark_name=bookmark_name
+            new_bookmark.owner=request.user
+            new_bookmark.save()
+            return render(request,'users/personal-center-mycollections.html',{'blog_list':blog_list,'bookmark_list':bookmark_list})
+        else:
+            return render(request,'users/personal-center-mycollections.html',{'new_bookmark_form':new_bookmark_form,'blog_list':blog_list,'bookmark_list':bookmark_list})

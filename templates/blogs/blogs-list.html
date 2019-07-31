@@ -1,108 +1,101 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>博客列表-kkblog</title>
-		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
-		<link rel="stylesheet" type="text/css" href="css/blogs-list.css"/>
-	</head>
-	<body>
-		<!--下面是导航条-->
-		<nav>
-	        <div id='nav-left'>
-            <img id='logo' src='img/logo.jpg'/>
-            <a id='square' href='index.html'>博客广场</a>
-            <div id='search-box'>
-            <form class="form-inline">
-                <div class="form-group">     
-                        <input type="password" class="form-control input-sm" id="inputsearch" placeholder="请输入您感兴趣的内容">     
-                </div>
-                <button type="submit" class="btn btn-default btn-sm">搜索</button>
-            </form>
-            </div>
-            </div>
-            <div id='nav-right'>
-            <a href='write-blog.html'>写博客</a>
-            <a href='personal-center-messages.html'>消息</a>
-            <a id='login' href='login.html'>[登录]</a>
-            <a href='register.html'>[注册]</a>
-            <a href='personal-center.html'>jessicafeng</a>
-            <a>[退出]</a>
-            </div>
-            
-        </nav>
-        
-        <!--下面是左边的博主个人信息-->
-        <section id="main">
-        <div id='left'>
-        	<a><img src="img/jg.jpg" class='img-circle'/></a>
-        	<a>高嘉朗<span>[互相关注]</span></a>
-        	<a href="" class='follow-btn'>取消关注</a>
-        	<p>总访问量：666</p>
-        	<p>收获的赞：22</p>
-        	<p>收到的评论：3</p>
-        	<p>关注：34</p>
-        	<p>粉丝：560</p>
-        </div>
-        
-        <!--下面是博客和博客分类区域-->
-        
-        <!--下面是中间展示的博客-->   
-            <div id='blogs-display'>
-		        <dl>
-		            <dt class='blog-title'><a href='blog-detail.html'>这是博客的标题</a><a class='collect'>[收藏]</a></a></dt>
-		            <dd><a href='personal-center-myblog-detail.html'>这是博客的正文</a></dd>
-		        </dl>
-		        <dl>
-		            <dt>这是博客的标题</dt>
-		            <dd>这是博客的正文</dd>
-		        </dl>
-		        <dl>
-		            <dt>这是博客的标题</dt>
-		            <dd>这是博客的正文</dd>
-		        </dl>
-		        <dl>
-		            <dt>这是博客的标题</dt>
-		            <dd>这是博客的正文</dd>
-		        </dl>
-		        <dl>
-		            <dt>这是博客的标题</dt>
-		            <dd>这是博客的正文</dd>
-		        </dl>
-		        <dl>
-		            <dt>这是博客的标题</dt>
-		            <dd>这是博客的正文</dd>
-		        </dl>
-	        </div>
-	         
-        </div><!--这是middle的结尾-->
-        
-        <!--下面是右侧热门博主-->
-        <div id='right'>
-            <h3>按时间分类</h3>
-            <ul>
-                <li><a>2019年7月</a></li>
-                <li><a>2019年6月</a></li>
-                <li><a>2019年5月</a></li>
-            </ul>
-            <h3>按主题分类</h3>
-            <ul>
-                <li><a>HTML学习</a></li>
-                <li><a>Linux学习</a></li>
-                <li><a>Python学习</a></li>
-            </ul>
-            
-                
-            
-        	
-        </div>
-        	
-		</section>
+{% extends 'base.html'%}
+{% load staticfiles %}
+{% block title %}博客列表{% endblock title%}
+{% block mycss%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/blogs-list.css'%}"/>
+{% endblock mycss%}
+
+{% block content %}
+<section id="main">
+		<!--下面是左边的博主个人信息-->
+	<div id='left'>
+		<a href="{% url 'blogs:blog_list' author.id%}"><img {% if author.image %}src="{{MEDIA_URL}}{{author.image}}"{% else %}src="{% static 'img/noimage.jpg'%}"{% endif %} class='img-circle'/></a>
+		<a {% if author.nickname %}title="{{author.nickname}}"{% else %}title="{{author.username}}"{% endif %} href="{% url 'blogs:blog_list' author.id %}">{% if author.nickname %}{{author.nickname|slice:':8'}}{%else%}{{author.username|slice:':8'}}{% endif %}<span id='mutual-span'  {% if is_mutual %}style='display:inline'{% else %}style='display:none'{%endif%}>[互相关注]</span></a>
+		<a class='follow-btn'>{% if fstatus %}取消关注{% else %}关注{% endif %}</a>
+		<p>总访问量：{{author.visit_num}}</p>
+		<p>收获的赞：{{author.thumb_num}}</p>
+		<p>收到的评论：{{author.comment_num}}</p>
+		<p>关注：{{author.follow_num}}</p>
+		<p id='fan-p'>粉丝：{{author.fan_num}}</p>
+	</div>
+	
+	<!--下面是博客和博客分类区域-->
+	
+	<!--下面是中间展示的博客-->   
+		<div id='blogs-display'>
+			{% for blog in blog_list %}
+			<dl>
+				<dt class='blog-title'><a href='blog-detail.html'>{{blog.blog_title}}</a><a class='collect'>[收藏]</a></a></dt>
+				<dd><a href='personal-center-myblog-detail.html'>{{blog.blog_text}}</a></dd>
+			</dl>
+			{% empty %}
+			<dl>
+				<dt>暂无博客</dt>
+				<dd>去<a style='font-weight: bold;text-decoration: underline' href='/'>博客广场</a>看看吧</dd>
+			</dl>
+			{% endfor %}
+		</div>
+		 
+	</div><!--这是middle的结尾-->
+	
+	<!--下面是右侧热门博主-->
+	<div id='right'>
+		<h3>按时间分类</h3>
+		<ul>
+			{% for time in time_list%}
+			<li {% if year == time.0 and month == time.1 %}class='active1'{% endif %}><a href="?topic={{topic_id}}&year={{time.0}}&month={{time.1}}">{{time.0}}年{{time.1}}月<span class='badge'>{{time.2}}</span></a></li>
+			{% endfor %}
+		</ul>
+		<h3>按主题分类</h3>
+		<ul>
+			{% for topic in topic_list %}
+			<li {% if topic_id == topic.id %}class='active1'{% endif %}><a title="{{topic.topic_name}}" href="?topic={{topic.id}}&year={{year}}&month={{month}}">{{topic.topic_name|slice:':8'}}<span class='badge'>{{topic.get_count}}</span></a></li>
+			{% endfor %}
+		</ul>
 		
-		<script type="text/javascript" src="js/jquery-3.4.0.min.js" ></script>
-	    <script src="js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
-	    <script type="text/javascript" src="js/index.js" ></script>
-	    
-	</body>
-</html>
+	</div>
+		
+	</section>
+{% endblock content %}
+
+{% block myjs %}
+<script>
+$(function(){
+   //下面是关注和取关的功能
+   $('.follow-btn').click(function(){
+      var idol_id="{{author.id}}";
+	  $.ajax({
+		  type:'GET',
+		  url:"{% url 'operations:follow'%}",
+		  data:{
+			  idol_id:idol_id,
+		  },
+		  success:function(callback){
+			  if(callback.status=='ok'){
+                $('.follow-btn').text(callback.msg);
+				//根据传回来的互关的值判断让互相关注的span显示还是隐藏
+                var mutual_span=$('#mutual-span');
+				if(callback.is_mutual==1){
+					mutual_span.css('display','inline')
+				}else{
+					mutual_span.css('display','none')
+				}	
+
+				//改变博主的粉丝数
+				current_fans=parseInt($('#fan-p').text().slice(3));
+				$('#fan-p').text('粉丝：'+(current_fans+callback.num));
+
+			  }
+			  else{
+                  alert(callback.msg)
+			  }
+		  }
+
+	  })//这是ajax的结尾
+   })//这是关注取关的click的结尾
+})//这是最外面的function的结尾
+</script>
+{% endblock myjs %}
+
+
 

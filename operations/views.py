@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views import View
-from .models import UserThumbup
+from .models import UserThumbup,UserFollow
+from users.models import UserProfile
 from django.http import JsonResponse
 
 # Create your views here.
@@ -48,5 +49,83 @@ class ThumbupView(View):
         else:
             return JsonResponse({'status':'fail','msg':'操作失败'})
 
+class FollowView(View):
+    '''这是处理关注和取消关注的视图'''
+    def get(self,request):
+        idol_id=request.GET.get('idol_id','')
+        #如果关注人的id传过来了,先看看关注表里有没有该用户关注该博主的记录
+        if idol_id:
+            userfollow_list=UserFollow.objects.filter(oneself=request.user,idol_id=int(idol_id))
+            idol=UserProfile.objects.filter(id=int(idol_id))[0]
+            #如果有记录，看看现在是关注还是没关注的状态
+            if userfollow_list:
+                userfollow=userfollow_list[0]
+                #如果是关注的状态，那么就是要取关。要记得把该用户的关注人减少一个，该博主的粉丝减少一个
+                if userfollow.fstatus:
+                    userfollow.fstatus=False
+                    #看看以前是不是互关状态，如果是互关状态，要把两条关注记录的互关都取消
+                    if userfollow.is_mutual:
+                        userfollow.is_mutual=False
+                        #这是另一条从博主角度出发的关注记录
+                        reversefollow=UserFollow.objects.filter(oneself=idol,idol_id=request.user.id)[0]
+                        reversefollow.is_mutual=False
+                        reversefollow.save()
+                    userfollow.save()
+                    request.user.follow_num-=1
+                    request.user.save()
+                    idol.fan_num-=1
+                    idol.save()
+                    if userfollow.is_mutual:
+                        is_mutual=1
+                    else:
+                        is_mutual=0
+
+                    return JsonResponse({'status':'ok','msg':'关注','is_mutual':is_mutual,'num':-1})
+                #如果现在是没有关注的状态，那么就是要恢复关注。记得该用户的关注人加一，该博主的粉丝加一。
+                else:
+                    userfollow.fstatus=True
+                    #看看博主关没关注访问者，如果关注了，就要把两条记录都改成互关
+                    reversefollow_list=UserFollow.objects.filter(oneself=idol,idol_id=request.user.id,fstatus=True)
+                    if reversefollow_list:
+                        reversefollow=reversefollow_list[0]
+                        reversefollow.is_mutual=True
+                        reversefollow.save()
+                        userfollow.is_mutual=True
+                    userfollow.save()
+                    request.user.follow_num+=1
+                    request.user.save()
+                    idol.fan_num+=1
+                    idol.save()
+                    if userfollow.is_mutual:
+                        is_mutual=1
+                    else:
+                        is_mutual=0
+                    return JsonResponse({'status':'ok','msg':'取消关注','is_mutual':is_mutual,'num':1})
+            #如果没有记录，那就要新建一条关注记录，并且该用户关注人加一，该博主粉丝加一
+            else:
+                new_userfollow=UserFollow()
+                new_userfollow.oneself=request.user
+                new_userfollow.idol_id=int(idol_id)
+                new_userfollow.fstatus=True
+                #看看博主关没关注访问者，如果关注了，就要把两条关注记录都改成互关
+                reversefollow_list=UserFollow.objects.filter(oneself=idol,idol_id=request.user.id)
+                if reversefollow_list:
+                    reversefollow=reversefollow_list[0]
+                    reversefollow.is_mutual=True
+                    reversefollow.save()
+                    new_userfollow.is_mutual=True
+                new_userfollow.save()
+                request.user.follow_num+=1
+                request.user.save()
+                idol.fan_num+=1
+                idol.save()
+                if new_userfollow.is_mutual:
+                    is_mutual=1
+                else:
+                    is_mutual=0
+                return JsonResponse({'status':'ok','msg':'取消关注','is_mutual':is_mutual,'num':1})
+        #如果id没有传过来
+        else:
+            return JsonResponse({'status':'fail','msg':'操作失败'})
 
 

@@ -32,46 +32,31 @@
     </ul>
     
     <div id='blogs-display'>
+    {% for blog in blog_list%}
     <dl>
-        <dt><a href='blog-detail.html'>这是博客的标题</a></dt>
-        <dd><a href='blog-detail.html'>这是博客的正文</a></dd>
+        <dt><a href='blog-detail.html'>{{blog.blog_title}}</a></dt>
+        <dd><a href='blog-detail.html'>{{blog.blog_text}}</a></dd>
     </dl>
-    <dl>
-        <dt>这是博客的标题</dt>
-        <dd>这是博客的正文</dd>
-    </dl>
-    <dl>
-        <dt>这是博客的标题</dt>
-        <dd>这是博客的正文</dd>
-    </dl>
-    <dl>
-        <dt>这是博客的标题</dt>
-        <dd>这是博客的正文</dd>
-    </dl>
-    <dl>
-        <dt>这是博客的标题</dt>
-        <dd>这是博客的正文</dd>
-    </dl>
-    <dl>
-        <dt>这是博客的标题</dt>
-        <dd>这是博客的正文</dd>
-    </dl>
+    {% endfor %}
     </div>
      
 </div><!--这是middle的结尾-->
 <!--下面是右侧热门博主-->
 <div id='right'>
     <P><img src="{% static 'img/rankgold.png' %}"/>热门博主</p>
+    {% for author in author_list%}
     <ul>
-        <li><a><img class='img-circle' src='img/jg.jpg'/></a></li>
-        <li><a>无衣</a></li>
+        <li><a href="{% url 'blogs:blog_list' author.id%}"><img class='img-circle' {% if author.image %}src='{{MEDIA_URL}}{{author.image}}'{% else %}src="{% static 'img/noimage.jpg' %}"{% endif %}/></a></li>
+        <li>
+            {% if author.nickname%}
+            <a title={{author.nickname}} href="{% url 'blogs:blog_list' author.id%}">{{author.nickname|slice:'8'}}</a>
+            {% else %}
+            <a title={{author.username}} href="{% url 'blogs:blog_list' author.id %}">{{author.username|slice:':8'}}</a>
+            {% endif %}
+        </li>
     
     </ul>
-    <ul>
-        <li><img class='img-circle' src='img/jg.jpg'/></li>
-        <li><a>无衣</a></li>
-    
-    </ul>
+    {% endfor %}
     
 </div>
 

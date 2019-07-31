@@ -41,6 +41,8 @@ class Blog(models.Model):
         '''这是返回的描述'''
         return self.blog_title
 
+    
+
     class Meta:
         '''这是元信息类'''
         verbose_name='博客信息'
@@ -57,6 +59,11 @@ class CollectBookMark(models.Model):
     def __str__(self):
         '''这是返回的描述'''
         return self.bookmark_name
+
+    def get_count(self):
+        '''返回这个收藏夹下收藏的所有博客的数量，但是不包括那些已经逻辑删除的'''
+        collectblog_num=self.usercollect_set.filter(cstatus=True).count()
+        return collectblog_num
 
     class Meta:
         '''这是元信息类'''

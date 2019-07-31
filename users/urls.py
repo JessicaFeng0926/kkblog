@@ -20,4 +20,10 @@ urlpatterns=[
     re_path(r'^myblogs/$',views.MyblogsView.as_view(),name='myblogs'),
     #我的博客详情
     re_path(r'^myblog_detail/(\d+)/$',views.MyBlogDetailView.as_view(),name='myblog_detail'),
+    #我的关注
+    re_path(r'^myfollow/$',views.MyFollowView.as_view(),name='myfollow'),
+    #我的粉丝
+    re_path(r'^myfans/$',views.MyFansView.as_view(),name='myfans'),
+    #我的收藏
+    re_path(r'mycollections/$',views.MyCollectionsView.as_view(),name='mycollections'),
 ]

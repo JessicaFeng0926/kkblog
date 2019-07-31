@@ -46,10 +46,10 @@
         <ul id='left'>
             <li>个人中心</li>
             <li {% if request.path|slice:':8' == '/users/p' %}class='active1'{% endif %}><a href="{% url 'users:pc'%}">个人资料</a></li>
-            <li><a href='{% url 'users:myblogs' %}' {% if request.path|slice:'13' == '/users/myblog' %}class='active1'{% endif %}>我的博客</a></li>
-            <li><a href='personal-center-following.html'>我的关注</a></li>
-            <li><a href='personal-center-followers.html'>我的粉丝</a></li>
-            <li><a href='personal-center-mycollections.html'>我的收藏</a></li>
+            <li {% if request.path|slice:'13' == '/users/myblog' %}class='active1'{% endif %}><a href="{% url 'users:myblogs' %}" >我的博客</a></li>
+            <li {%if request.path|slice:'11' == '/users/myfo'%} class='active1' {% endif %}><a href="{% url 'users:myfollow' %}" >我的关注</a></li>
+            <li {% if request.path|slice:'11' == '/users/myfa' %} class='active1' {% endif %}><a href="{% url 'users:myfans' %}">我的粉丝</a></li>
+            <li {% if request.path == '/users/mycollections/'%} class='active1' {% endif %}><a href="{% url 'users:mycollections'%}">我的收藏</a></li>
             <li><a href='personal-center-messages.html'>我的消息</a></li>
         </ul>
         {% block content%}{% endblock content %}

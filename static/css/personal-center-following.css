@@ -149,3 +149,11 @@ dl p{
 dl p a{
 	text-decoration: underline;
 }
+
+.follow-btn{
+    color:cornflowerblue;
+}
+
+.follow-btn:hover{
+    color:blue;
+}
