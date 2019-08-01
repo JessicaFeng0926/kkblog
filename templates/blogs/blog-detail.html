@@ -1,113 +1,154 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>阅读博客-kkblog</title>
-		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
-		<link rel="stylesheet" type="text/css" href="css/blog-detail.css"/>
-	</head>
-	<body>
-		<!--下面是导航条-->
-		<nav>
-	        <div id='nav-left'>
-            <img id='logo' src='img/logo.jpg'/>
-            <a id='square' href='index.html'>博客广场</a>
-            <div id='search-box'>
-            <form class="form-inline">
-                <div class="form-group">     
-                        <input type="password" class="form-control input-sm" id="inputsearch" placeholder="请输入您感兴趣的内容">     
-                </div>
-                <button type="submit" class="btn btn-default btn-sm">搜索</button>
-            </form>
-            </div>
-            </div>
-            <div id='nav-right'>
-            <a href='write-blog.html'>写博客</a>
-            <a href='personal-center-messages.html'>消息</a>
-            <a id='login' href='login.html'>[登录]</a>
-            <a href='register.html'>[注册]</a>
-            <a href='personal-center.html'>jessicafeng</a>
-            <a>[退出]</a>
-            </div>
-            
-        </nav>
-        
-        <!--下面是左边的博主个人信息-->
-        <section id="main">
-        <div id='left'>
-        	<a href='blogs-list.html'><img src="img/rex.jpg" class='img-circle'/></a>
-        	<a href='blogs-list.html'>李鑫一<span>[互相关注]</span></a>
-        	<a href="" class='follow-btn'>取消关注</a>
-        	<p>总访问量：666</p>
-        	<p>收获的赞：22</p>
-        	<p>收到的评论：3</p>
-        	<p>关注：34</p>
-        	<p>粉丝：560</p>
-        </div>
-        
-        <!--下面是博客和博客分类区域-->
-        
-        <!--下面是中间展示的博客-->   
-            <div id='blogs-display'>
-		        <dl>
-		            <dt class='blog-title'><a>这是博客的标题</a><a class='collect'>[收藏]</a></a></dt>
-		            <dd class='blog-info'><span>添加时间：2019年7月27日</span><span>点击量:6666666666</span><span>所属主题：默认主题默认主题默认主题</span></dd>
-		            <dd class='blog-text'>
-		            	<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;这是第一个自然段。我就是想看看正文的显示样式会不会很奇怪。<br/>
-		            		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;这是第二个自然段这是第二个自然段这是第二个自然段
-		            		这是第二个自然段这是第二个自然段这是第二个自然段这是第二个自然段这是第二个自然段这是第二个自然段
-		            		这是第二个自然段这是第二个自然段这是第二个自然段这是第二个自然段这是第二个自然段这是第二个自然段
-		            		这是第二个自然段这是第二个自然段这是第二个自然段这是第二个自然段这是第二个自然段这是第二个自然段
-		            		这是第二个自然段这是第二个自然段这是第二个自然段这是第二个自然段这是第二个自然段这是第二个自然段
-		            		这是第二个自然段这是第二个自然段这是第二个自然段这是第二个自然段这是第二个自然段这是第二个自然段
-		            		这是第二个自然段这是第二个自然段这是第二个自然段这是第二个自然段这是第二个自然段这是第二个自然段
-		            	</p></dd>
-		            <dd class='thumb-up'><span class='glyphicon glyphicon-thumbs-up'></span></span><span>&nbsp;3</span></dd>
-		            <dd class='thumb-up-text'>喜欢就点个赞吧<dd>
-		            <dd class='input-comment'>
-		            	<form>
-							<div class="form-group">
-							  <input type="email" class="form-control" id="exampleInputEmail1" placeholder="您可以在这里输入您的评论">
-							</div>
-  
-                            <button type="submit" class="btn btn-default" id='comment-btn'>评论</button>
-                        </form>
-		            </dd>
-		            <dd class='comment'>
-		            	<p><a>李鑫一</a><a>@高嘉朗：</a>我滴朗哥哥，你也开始学Python啦！</p>
-		                <p><a>高嘉朗：</a>写得很棒！</p>
-		            </dd>
-		        </dl>
-	         
-            </div><!--这是blogs-display的结尾-->
-        
-        <!--下面是右侧热门博主-->
-        <div id='right'>
-            <h3>按时间分类</h3>
-            <ul>
-                <li><a>2019年7月<span class='badge'>5</span></a></li>
-                <li><a>2019年6月<span class='badge'>5</span></a></li>
-                <li><a>2019年5月<span class='badge'>5</span></a></li>
-            </ul>
-            <h3>按主题分类</h3>
-            <ul>
-                <li><a>HTML学习<span class='badge'>5</span></a></li>
-                <li><a>Linux学习<span class='badge'>5</span></a></li>
-                <li><a>Python学习<span class='badge'>5</span></a></li>
-            </ul>
-            
-                
-            
-        	
-        </div>
-        	
-		</section>
-		
-		<script type="text/javascript" src="js/jquery-3.4.0.min.js" ></script>
-	    <script src="js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
-	    <script type="text/javascript" src="js/index.js" ></script>
-	    
-	</body>
-</html>
+{% extends 'base.html'%}
+{% load staticfiles %}
+{% block title %}阅读博客{% endblock title %}
+{% block mycss %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/blog-detail.css' %}"/>
+{% endblock mycss %}
 
+{% block content %}
+<!--下面是左边的博主个人信息-->
+<section id="main">
+	<div id='left'>
+		<a href='blogs-list.html'><img {% if blog.author.image %}src="{{MEDIA_URL}}{{blog.author.image}}"{% else %}src="{% static 'img/noimage.jpg'%}"{% endif %} class='img-circle'/></a>
+		<a href="{% url 'blogs:blog_list' blog.author.id%}" {% if blog.author.nickname %}title="{{blog.author.nickname}}"{% else %}{{blog.author.username}}{% endif %}>{% if blog.author.nickname%}{{blog.author.nickname|slice:':8'}}{% else %}{{blog.author.username|slice:':8'}}{% endif %}<span {% if is_mutual%} style="display: inline"{% else %} style="display:none" {% endif %} id='mutual-span'>[互相关注]</span></a>
+		<a  class='follow-btn'>{% if fstatus %}取消关注{% else %}关注{% endif %}</a>
+		<p>总访问量：{{blog.author.visit_num}}</p>
+		<p id='total-thumb'>收获的赞：{{blog.author.thumb_num}}</p>
+		<p>收到的评论：{{blog.author.comment_num}}</p>
+		<p>关注：{{blog.author.follow_num}}</p>
+		<p id="fan-num">粉丝：{{blog.author.fan_num}}</p>
+	</div>
+	
+	<!--下面是博客和博客分类区域-->
+	
+	<!--下面是中间展示的博客-->   
+		<div id='blogs-display'>
+			<dl>
+				<dt class='blog-title'>{{blog.blog_title}}<a class='collect'>{% if cstatus %}[取消收藏]{% else %}[收藏]{% endif %}</a></a></dt>
+				<dd class='blog-info'><span>添加时间：{{blog.addtime|date:'Y年n月j日'}}</span><span>点击量:{{blog.click_num}}</span><span>所属主题:{{blog.blog_topic.topic_name}}</span></dd>
+				<dd class='blog-text'>
+					<p>{{blog.blog_text|safe}}
+					</p></dd>
+				<dd class='thumb-up' {% if tstatus %}style="color:red"{% else %}style="color:black"{% endif %}><span class='glyphicon glyphicon-thumbs-up'></span></span><span id="thumb-num">&nbsp;{{blog.thumb_num}}</span></dd>
+				<dd class='thumb-up-text'>喜欢就点个赞吧<dd>
+				<dd class='input-comment'>
+					<form>
+						<div class="form-group">
+						  <input type="text" class="form-control" id="exampleInputEmail1" placeholder="您可以在这里输入您的评论">
+						</div>
+
+						<button type="submit" class="btn btn-default" id='comment-btn'>评论</button>
+					</form>
+				</dd>
+				<dd class='comment'>
+					<p><a>李鑫一</a><a>@高嘉朗：</a>我滴朗哥哥，你也开始学Python啦！</p>
+					<p><a>高嘉朗：</a>写得很棒！</p>
+				</dd>
+			</dl>
+		 
+		</div><!--这是blogs-display的结尾-->
+	
+	<!--下面是右侧热门博主-->
+	<div id='right'>
+		<h3>按时间分类</h3>
+		<ul>
+			{% for time in time_list%}
+			<li><a href="{% url 'blogs:blog_list' blog.author.id%}?year={{time.0}}&month={{time.1}}">{{time.0}}年{{time.1}}月<span class='badge'>{{time.2}}</span></a></li>
+			{% endfor %}
+		</ul>
+		<h3>按主题分类</h3>
+		<ul>
+			{% for topic in topic_list %}
+			<li><a href="{% url 'blogs:blog_list' blog.author.id%}?topic={{topic.id}}">{{topic.topic_name}}<span class='badge'>{{topic.get_count}}</span></a></li>
+			{% endfor %}
+		</ul>		
+		
+		
+	</div>
+		
+	</section>
+{% endblock content %}
+
+{% block myjs%}
+<script>
+$(function(){
+  //下面是点赞和取消点赞的功能
+  $('.glyphicon-thumbs-up').click(function(){
+      var blog_id="{{blog.id}}";
+	  $.ajax({
+		  type:'GET',
+		  url:"{% url 'operations:thumbup'%}",
+		  data:{
+			  blog_id:blog_id,
+		  },
+		  success:function(callback){
+			  if(callback.status=='ok'){
+                  //点赞成功就更新大拇指旁边的数字以及作者下面的总赞,并改变颜色
+				  var current_thumb=parseInt($('#thumb-num').text().slice(1));
+				  $('#thumb-num').text(' '+(current_thumb+callback.num));
+				  $('.thumb-up').css('color',callback.msg)
+                  var total_thumb=parseInt($('#total-thumb').text().slice(5));
+				  $('#total-thumb').text('收获的赞：'+(total_thumb+callback.num))
+			  }
+			  else{
+				  alert(callback.msg)
+			  }
+		  }
+	  })
+  })//这是点赞功能的结尾
+   
+   //下面是关注和取关的功能
+   $('.follow-btn').click(function(){
+       var idol_id="{{blog.author.id}}";
+	   $.ajax({
+           type:'GET',
+		   url:"{% url 'operations:follow'%}",
+		   data:{
+			   idol_id:idol_id,
+		   },
+		   success:function(callback){
+			   if(callback.status=='ok'){
+                   //更改按钮的文字显示
+                   $('.follow-btn').text(callback.msg)
+				   //根据is_mutual的值判断互相关注标签显示与否
+                   if(callback.is_mutual==0){
+					   $('#mutual-span').css('display','none');
+				   }
+				   else{
+					   $('#mutual-span').css('display','inline')
+				   }
+				   //修改博主的粉丝数量
+				   var current_fans=parseInt($('#fan-num').text().slice(3));
+				   $('#fan-num').text('粉丝：'+(current_fans+callback.num))
+			   }
+			   else{
+				   alert(callback.msg)
+			   }
+		   }
+	   })//这是ajax的结尾
+   })//这是关注取关功能的结尾
+
+   //下面是收藏和取消收藏的功能
+   $('.collect').click(function(){
+      var blog_id="{{blog.id}}";
+	  $.ajax({
+        type:'GET',
+		url:"{% url 'operations:collect'%}",
+		data:{
+            blog_id:blog_id,
+		},
+		success:function(callback){
+             if(callback.status=='ok'){
+                $('.collect').text(callback.msg);
+			 }
+			 else{
+				 alert(callback.msg)
+			 }
+		}
+	  })//这是ajax的结尾
+   })//这是收藏功能的结尾
+
+})//这是最外面的function的结尾
+</script>
+{% endblock myjs %}
 

@@ -11,14 +11,14 @@
 <!--下面是左边的博客分类-->
 <ul id='left'>
     <li>博客分类</li>
-    <li class='active1'><a>全部</a></li>
-    <li><a>文学</a></li>
-    <li><a>艺术</a></li>
-    <li><a>情感</a></li>
-    <li><a>科技</a></li>
-    <li><a>健康</a></li>
-    <li><a>美妆</a></li>
-    <li><a>其他</a></li>
+    <li {% if category == '' %}class='active1'{% endif %}><a href="?category=&sort={{sort}}">全部</a></li>
+    <li {% if category == 'lr' %}class='active1'{% endif %}><a href="?category=lr&sort={{sort}}">文学</a></li>
+    <li {% if category == 'art' %}class='active1'{% endif %}><a href="?category=art&sort={{sort}}">艺术</a></li>
+    <li {% if category == 'emo' %}class='active1'{% endif %}><a href="?category=emo&sort={{sort}}">情感</a></li>
+    <li {% if category == 'tech' %}class='active1'{% endif %}><a href="?category=tech&sort={{sort}}">科技</a></li>
+    <li {% if category == 'hth' %}class='active1'{% endif %}><a href="?category=hth&sort={{sort}}">健康</a></li>
+    <li {% if category == 'bt' %}class='active1' {% endif %}><a href="?category=bt&sort={{sort}}">美妆</a></li>
+    <li {% if category == 'oth' %}class = 'active1'{% endif %}><a href="?category=oth&sort={{sort}}">其他</a></li>
     
 
 </ul>
@@ -27,15 +27,20 @@
 <!--下面是中间展示的博客-->
 <div id='middle'>
     <ul id='blogs-sort'>
-        <li class='active2'><a>最热↓</a></li>
-        <li ><a>最新↓</a></li>
+        <li {% if sort == 'hot' or sort == '' %}class='active2'{% endif %}><a href="?sort=hot&category={{category}}">最热↓</a></li>
+        <li {% if sort == 'new' %}class='active2'{% endif %}><a href="?sort=new&category={{category}}">最新↓</a></li>
     </ul>
     
     <div id='blogs-display'>
     {% for blog in blog_list%}
     <dl>
-        <dt><a href='blog-detail.html'>{{blog.blog_title}}</a></dt>
-        <dd><a href='blog-detail.html'>{{blog.blog_text}}</a></dd>
+        <dt><a href="{% url 'blogs:blog_detail' blog.id%}">{{blog.blog_title}}</a></dt>
+        <dd><a href="{% url 'blogs:blog_detail' blog.id%}">{{blog.blog_text|safe|slice:':150'}}……</a></dd>
+    </dl>
+    {% empty %}
+    <dl>
+        <dt>暂无博客</dt>
+        <dd>去<a href="/" style='font-weight: bold;text-decoration: underline;'>博客广场</a>看看吧</dd>
     </dl>
     {% endfor %}
     </div>

@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'xadmin',
     'crispy_forms',
     'captcha',
+    'tinymce',
 ]
 
 #别忘了声明用户信息表的继承属性

@@ -11,10 +11,10 @@
         <!--下面是中间展示的博客-->   
             <div id='blogs-display'>
 		        <dl>
-		            <dt class='blog-title'><span>{{blog.blog_title}}</span><a class='edit'>[修改]</a><a class='delete-btn'>[删除]</a></a></dt>
+		            <dt class='blog-title'><span>{{blog.blog_title}}</span><a class='edit' href="{% url 'users:edit_blog' blog.id%}">[修改]</a><a class='delete-btn'>[删除]</a></a></dt>
 		            <dd class='blog-info'><span>添加时间：{{blog.addtime|date:'Y年n月j日'}}</span><span>点击量：{{blog.click_num}}</span><span>所属主题：{{blog.blog_topic.topic_name}}</span></dd>
 		            <dd class='blog-text'>
-		            	<p>{{blog.blog_text}}
+		            	<p>{{blog.blog_text|safe}}
 		            	</p></dd>
 		            <dd class='thumb-up' {% if tstatus %}style='color:red;'{% endif %}><span class='glyphicon glyphicon-thumbs-up'></span><span id='thumb_num'>&nbsp;{{blog.thumb_num}}</span></dd>
 		            <dd class='thumb-up-text'>喜欢就点个赞吧<dd>

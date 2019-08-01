@@ -1,90 +1,87 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>修改博客-kkblog</title>
-		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
-		<link rel="stylesheet" type="text/css" href="css/write-blog.css"/>
-	</head>
-	<body>
-		<!--下面是导航条-->
-	    <nav>
-	        <div id='nav-left'>
-            <img id='logo' src='img/logo.jpg'/>
-            <a id='square' href='index.html'>博客广场</a>
-            <div id='search-box'>
-            <form class="form-inline">
-                <div class="form-group">
-                        <input type="text" class="form-control input-sm" id="inputsearch" placeholder="请输入您感兴趣的内容">   
-                </div>
-                <button type="submit" class="btn btn-default btn-sm">搜索</button>
-            </form>
-            </div>
-            </div>
-            <div id='nav-right'>
-            <a href='write-blog.html'>写博客</a>
-            <a href='personal-center-messages.html'>消息</a>
-            <a id='login' href='login.html'>[登录]</a>
-            <a href='register.html'>[注册]</a>
-            <a href='personal-center.html'>jessicafeng</a>
-            <a>[退出]</a>
-            </div>
-            
-        </nav>
-        
-        <!--下面是博客创作区域-->
-        <form class="form-horizontal">
-            <div class="form-group">
-    			<label for="blog-title" class="col-sm-2 control-label">标题</label>
-    			<div class="col-sm-8">
-      				<input type="text" class="form-control" id="blog-title" placeholder="请输入博客的标题">
-    			</div>
-  			</div>
-  			<div class="form-group">
-			    <label for="blog-text" class="col-sm-2 control-label">正文</label>
-			    <div class="col-sm-8">
-      				<textarea class="form-control" rows="15" id='blog-text'></textarea>
-    			</div>
-  		    </div>
-            
-            <div class='form-group'>
-            	<label for="blog-topic" class="col-sm-2 control-label">主题</label>
-	            <div class='col-xs-6'>
-	                <select class="form-control" id='blog-topic'>
-			            <option>默认主题</option>
-					    <option>HTML学习</option>
-					    <option>Linux学习</option>
-					    <option>4</option>
-					    <option>5</option>
-					</select>
-				</div>
+{% extends 'base.html'%}
+{% load staticfiles %}
+{% block title %}修改博客{% endblock title%}
+{% block mycss%}
+<link rel="stylesheet" type="text/css" href="{% static 'css/write-blog.css'%}"/>
+{% endblock mycss %}
+
+{% block content%}
+<!--下面是博客创作区域-->
+<form class="form-horizontal" action="{% url 'users:edit_blog' blog.id%}" method="POST">
+	{% csrf_token %}
+		<div class="form-group">
+			<label for="blog-title" class="col-sm-2 control-label">标题</label>
+			<div class="col-sm-8">
+				  <input type="text" class="form-control" id="blog-title" placeholder="请输入博客的标题" name='blog_title' value='{{blog.blog_title}}'>
 			</div>
-			<div class='form-group'>
-            	<label for="blog-type" class="col-sm-2 control-label">博客类型</label>
-	            <div class='col-xs-6'>
-	                <select class="form-control" id='blog-type'>
-			            <option>文学</option>
-					    <option>艺术</option>
-					    <option>情感</option>
-					    <option>科技</option>
-					    <option>健康</option>
-					    <option>美妆</option>
-					    <option>其他</option>
-					</select>
-				</div>
+		  </div>
+		  <div class="form-group">
+			<label for="blog-text" class="col-sm-2 control-label">正文</label>
+			<div class="col-sm-8">
+				  <textarea class="form-control" rows="15" id='{{blog.id}}' name='blog_text' ></textarea>
 			</div>
-			
-			
-            <div class="form-group">
-    			<div class="col-sm-offset-2 col-sm-10">
-      				<button type="submit" class="btn btn-default" id='saveandpost'>保存并发布</button>
-    			</div>
-  			</div>
-		</form>
+		  </div>
 		
-		<script type="text/javascript" src="js/jquery-3.4.0.min.js" ></script>
-	    <script src="js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
-	    <script type="text/javascript" src="js/index.js" ></script>
-	    </body>
-</html>
+		<div class='form-group'>
+			<label for="blog-topic" class="col-sm-2 control-label">主题</label>
+			<div class='col-xs-6'>
+				<select class="form-control" id='blog-topic' name='blog_topic'>
+					{% for topic in topic_list%}
+					<option value='{{topic.id}}' {% if blog.blog_topic_id == topic.id %}selected {% endif %} >{{topic.topic_name}}</option>
+					{% endfor %}
+				</select>
+			</div>
+		</div>
+		<div class='form-group'>
+			<label for="blog-type" class="col-sm-2 control-label">博客类型</label>
+			<div class='col-xs-6'>
+				<select class="form-control" id='blog-type' name='category'>
+					<option value='lr' {% if blog.category == 'lr' %}selected{% endif %}>文学</option>
+					<option value='art' {% if blog.category == 'art' %}selected{% endif%}>艺术</option>
+					<option value='emo' {% if blog.category == 'emo' %}selected{% endif%}>情感</option>
+					<option value='tech' {% if blog.category == 'tech' %}selected{% endif%}>科技</option>
+					<option value='hth'{% if blog.category == 'hth' %}selected{% endif%} >健康</option>
+					<option value='bt' {% if blog.category == 'bt' %}selected{% endif%}>美妆</option>
+					<option value='oth'{% if blog.category == 'oth' %}selected{% endif%} >其他</option>
+				</select>
+			</div>
+		</div>
+		
+		<div class='col-sm-offset-2 col-sm-10'>
+		 {% for k,v in editblog_form.errors.items%}
+		 {{v}}
+		 {% endfor %}
+		</div>
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-10">
+				  <button type="submit" class="btn btn-default" id='saveandpost'>保存并发布</button>
+			</div>
+		  </div>
+	</form>
+{% endblock content %}
+
+{% block myjs%}
+<script src="/static/tiny_mce/tiny_mce.js"></script>
+<script>
+
+	tinyMCE.init({
+	'selector':'textarea#{{blog.id}}',
+	'language':'zh-cn',
+	'theme':'advanced',
+	
+})
+function htmlEncodeJQ ( str ) {
+    return $('<span/>').html( str ).text();
+}
+
+//这里延时设置内容，才能奏效
+   setTimeout(function(){
+       tinyMCE.activeEditor.setContent(htmlEncodeJQ("{{blog.blog_text}}"))
+   },666)
+
+
+
+
+</script>
+{% endblock myjs%}
 

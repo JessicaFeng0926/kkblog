@@ -26,4 +26,8 @@ urlpatterns=[
     re_path(r'^myfans/$',views.MyFansView.as_view(),name='myfans'),
     #我的收藏
     re_path(r'mycollections/$',views.MyCollectionsView.as_view(),name='mycollections'),
+    #写博客
+    re_path(r'write_blog/$',views.WriteBlogView.as_view(),name='write_blog'),
+    #下面是修改博客的视图
+    re_path(r'^edit_blog/(\d+)/$',views.EditBlogView.as_view(),name='edit_blog'),
 ]

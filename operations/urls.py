@@ -6,4 +6,6 @@ urlpatterns=[
     re_path(r'^thumbup/$',views.ThumbupView.as_view(),name='thumbup'),
     #下面是处理关注和取消关注的路由
     re_path(r'^follow/$',views.FollowView.as_view(),name='follow'),
+    #下面是收藏和取消收藏功能的路由
+    re_path(r'^collect/$',views.CollectView.as_view(),name='collect'),
 ]

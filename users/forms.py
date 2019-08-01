@@ -85,3 +85,26 @@ class NewBookmarkForm(forms.Form):
         'required':'收藏夹名不能为空',
         'max_length':'收藏夹名不能超过30个字',
     })
+
+class NewBlogForm(forms.Form):
+    '''这是验证新写的博客的表单类'''
+    blog_title=forms.CharField(required=True,max_length=40,
+    error_messages={
+        'required':'博客标题不能为空',
+        'max_length':'博客标题不能超过40个字',
+    })
+
+    blog_text=forms.CharField(required=True,widget=forms.Textarea,
+    error_messages={
+        'required':'博客正文不能为空'
+    })
+
+    blog_topic=forms.IntegerField(required=True,
+    error_messages={
+        'required':'博客主题不能为空'
+    })
+    
+    category=forms.CharField(required=True,
+    error_messages={
+        'required':'博客分类不能为空'
+    })

@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.views import View
-from .models import UserThumbup,UserFollow
+from .models import UserThumbup,UserFollow,UserCollect
 from users.models import UserProfile
+from blogs.models import CollectBookMark
 from django.http import JsonResponse
 
 # Create your views here.
@@ -128,4 +129,37 @@ class FollowView(View):
         else:
             return JsonResponse({'status':'fail','msg':'操作失败'})
 
-
+class CollectView(View):
+    '''这是收藏的视图类'''
+    def get(self,request):
+        blog_id=request.GET.get('blog_id','')
+        if blog_id:
+            #看看有没有对这篇博客的收藏记录
+            usercollect_list=UserCollect.objects.filter(collector=request.user,collect_blog_id=int(blog_id))
+            #找到该用户的默认收藏夹
+            bookmark=CollectBookMark.objects.filter(owner=request.user,is_default=True)[0]
+            #如果有，就看看目前的收藏状态
+            if usercollect_list:
+                usercollect=usercollect_list[0]
+                #如果目前是收藏状态，那现在就是想取消收藏
+                if usercollect.cstatus:
+                    usercollect.cstatus=False
+                    usercollect.save()
+                    return JsonResponse({'status':'ok','msg':'[收藏]'})
+                #如果目前是未收藏的状态，那就是想重新收藏，重新收藏的还放回默认收藏夹
+                else:
+                    usercollect.cstatus=True
+                    usercollect.bookmark=bookmark
+                    usercollect.save()
+                    return JsonResponse({'status':'ok','msg':'[取消收藏]'})
+            #如果没有记录，就新建，并且收藏
+            else:
+                new_usercollect=UserCollect()
+                new_usercollect.collector=request.user
+                new_usercollect.collect_blog_id=int(blog_id)
+                new_usercollect.cstatus=True
+                new_usercollect.bookmark=bookmark
+                new_usercollect.save()
+                return JsonResponse({'status':'ok','msg':'[取消收藏]'})
+        else:
+            return JsonResponse({'status':'fail','msg':'操作失败'})

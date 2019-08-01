@@ -17,8 +17,8 @@
 
                 {% for blog in blog_list%}
 		        <dl>
-		            <dt class='blog-title'><a href="{% url 'users:myblog_detail' blog.id%}">{{blog.blog_title}}</a><a class='edit' href='edit-blog.html'>[修改]</a><a class='delete-btn' bid="{{blog.id}}">[删除]</a></dt>
-		            <dd><a href="{% url 'users:myblog_detail' blog.id%}">{{blog.blog_text}}</a></dd>
+		            <dt class='blog-title'><a href="{% url 'users:myblog_detail' blog.id%}">{{blog.blog_title}}</a><a class='edit' href="{% url 'users:edit_blog' blog.id%}">[修改]</a><a class='delete-btn' bid="{{blog.id}}">[删除]</a></dt>
+		            <dd><a href="{% url 'users:myblog_detail' blog.id%}">{{blog.blog_text|safe|slice:':150'}}……</a></dd>
                 </dl>
                 {% empty %}
 		        <dl>
@@ -121,6 +121,8 @@ $(function(){
           })//这是ajax的结尾
          }  
     })//这是删除博客的click的结尾
+
+    
 })//这是最外面的function的结尾
 </script>
 {% endblock myjs %}

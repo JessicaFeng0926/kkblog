@@ -23,7 +23,7 @@
             </div>
             </div>
             <div id='nav-right'>
-            <a href='write-blog.html'>写博客</a>
+            <a href="{% url 'users:write_blog'%}">写博客</a>
             <a href='personal-center-messages.html'>消息<span class='badge'>1</span></a>
             {% if request.user.is_authenticated %}
             

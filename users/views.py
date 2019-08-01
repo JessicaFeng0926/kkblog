@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,reverse
 from django.views import View
-from .forms import UserRegisterForm,UserLoginForm,UserForgetForm,UserResetForm,UserPersonalCenterForm,NewTopicForm,NewBookmarkForm
+from .forms import UserRegisterForm,UserLoginForm,UserForgetForm,UserResetForm,UserPersonalCenterForm,NewTopicForm,NewBookmarkForm,NewBlogForm
 from .models import UserProfile,EmailVerifyCode
 from blogs.models import Topic,CollectBookMark,Blog
 from operations.models import UserThumbup,UserFollow,UserCollect
@@ -13,11 +13,24 @@ from datetime import datetime
 
 def index(request):
     '''这是主页的视图'''
-    #按照点击量返回最热博客
-    blog_list=Blog.objects.order_by('-click_num')[:100]
+    #按照点击量返回最热博客（这是默认的最热）
+    blog_list=Blog.objects.filter(is_delete=False).order_by('-click_num')
+    #如果传来了按照最新或最热来排序，就重新排序
+    sort=request.GET.get('sort','')
+    if sort:
+        if sort=='new':
+            blog_list=blog_list.order_by('-addtime')
+        else:
+            blog_list=blog_list.order_by('-click_num')
+    #如果传来了博客分类，就要重新筛选
+    category=request.GET.get('category','')
+    if category:
+        blog_list=blog_list.filter(category=category)
+    
+    blog_list=blog_list[:100]
     #按照访问量返回热门博主
     author_list=UserProfile.objects.exclude(is_superuser=True).order_by('-visit_num')[:5]
-    return render(request,'index.html',{'author_list':author_list,'blog_list':blog_list})
+    return render(request,'index.html',{'author_list':author_list,'blog_list':blog_list,'sort':sort,'category':category})
 
 class UserLoginView(View):
     '''这是用户登录的视图'''
@@ -234,7 +247,7 @@ class UserPersonalCenterView(View):
 
 def get_data_list(user):
     '''这是我的博客页面获取需要的所有信息的函数'''
-    topic_list=Topic.objects.filter(owner=user).order_by('addtime')
+    topic_list=Topic.objects.filter(owner=user,is_delete=False).order_by('addtime')
     blog_list=Blog.objects.filter(author=user,is_delete=False).order_by('addtime')
     """ #因为不需要显示没有写博客的月份，所以其实日期不用注册时间了，用第一篇博客的创作时间
     start=blog_list[0].addtime
@@ -405,7 +418,7 @@ class MyCollectionsView(View):
     '''这是我的收藏的视图类'''
     def get(self,request):
         blog_list=[]
-        usercollect_list=UserCollect.objects.filter(collector=request.user,cstatus=True)
+        usercollect_list=UserCollect.objects.filter(collector=request.user,cstatus=True).order_by('-addtime')
         #如果有收藏记录
         if usercollect_list:
             #如果用户点击了某个收藏夹，就要进一步筛选只属于这个收藏夹的博客
@@ -446,3 +459,66 @@ class MyCollectionsView(View):
             return render(request,'users/personal-center-mycollections.html',{'blog_list':blog_list,'bookmark_list':bookmark_list})
         else:
             return render(request,'users/personal-center-mycollections.html',{'new_bookmark_form':new_bookmark_form,'blog_list':blog_list,'bookmark_list':bookmark_list})
+
+class WriteBlogView(View):
+    '''这是写博客的视图类'''
+    def get(self,request):
+        #把用户的所有主题传过去
+        topic_list=Topic.objects.filter(owner=request.user,is_delete=False)
+        return render(request,'users/write-blog.html',{'topic_list':topic_list})
+    def post(self,request):
+        newblog_form=NewBlogForm(request.POST)
+        topic_list=Topic.objects.filter(owner=request.user,is_delete=False)
+        if newblog_form.is_valid():
+            blog_title=newblog_form.cleaned_data['blog_title']
+            blog_text=newblog_form.cleaned_data['blog_text']
+            blog_topic_id=int(newblog_form.cleaned_data['blog_topic'])
+            category=newblog_form.cleaned_data['category']
+            newblog=Blog()
+            newblog.blog_title=blog_title
+            newblog.blog_text=blog_text
+            newblog.blog_topic_id=blog_topic_id
+            newblog.category=category
+            newblog.author=request.user
+            newblog.save()
+            return redirect('users:myblogs')
+        else:
+            return render(request,'users/write-blog.html',{'topic_list':topic_list,'newblog_form':newblog_form})
+
+class EditBlogView(View):
+    '''这是修改博客的视图类'''
+    def get(self,request,blog_id):
+        if blog_id:
+            blog_list=Blog.objects.filter(id=int(blog_id),is_delete=False)
+            if blog_list:
+                blog=blog_list[0]
+                #\r\n在js里会报错，所以这里把它们替换成空再传回前端
+                #换行效果依然存在，因为富文本里的每一段都用p标签包裹起来了，换行符实在是鸡肋
+                blog.blog_text=blog.blog_text.replace('\r\n','')
+                #把用户的主题列表也传回去
+                topic_list=Topic.objects.filter(owner=request.user,is_delete=False)
+                return render(request,'users/edit-blog.html',{'blog':blog,'topic_list':topic_list})
+            #如果博客不存在，重定向到我的博客列表页
+            else:
+                return redirect(reverse('users:myblogs'))
+    def post(self,request,blog_id):
+        editblog_form=NewBlogForm(request.POST)
+        if editblog_form.is_valid():
+            blog_title=editblog_form.cleaned_data['blog_title']
+            blog_text=editblog_form.cleaned_data['blog_text']
+            blog_topic=editblog_form.cleaned_data['blog_topic']
+            category=editblog_form.cleaned_data['category']
+            blog=Blog.objects.filter(id=int(blog_id))[0]
+            blog.blog_title=blog_title
+            blog.blog_text=blog_text
+            blog.blog_topic_id=blog_topic
+            blog.category=category
+            blog.save()
+            return redirect(reverse('users:myblogs'))
+        else:
+            blog=Blog.objects.filter(id=int(blog_id))[0]
+            blog.blog_text=blog.blog_text.replace('\r\n','')
+            topic_list=Topic.objects.filter(owner=request.user,is_delete=False)
+            return render(request,'users/edit-blog.html',{'blog':blog,'topic_list':topic_list,'editblog_form':editblog_form})
+
+

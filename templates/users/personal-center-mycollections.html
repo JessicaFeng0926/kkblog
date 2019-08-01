@@ -13,8 +13,8 @@
             <div id='blogs-display'>
                 {% for blog in blog_list%}
 		        <dl>
-		            <dt class='blog-title'><a href="#">{{blog.blog_title}}</a><a class='move' href='personal-center-mycollection-move.html'>[移动]</a><a class='delete-cl'>[删除]</a></dt>
-		            <dd><a>{{blog.blog_title}}</a></dd>
+		            <dt class='blog-title'><a href="{% url 'blogs:blog_detail' blog.id%}">{{blog.blog_title}}</a><a class='move' href='personal-center-mycollection-move.html'>[移动]</a><a class='delete-cl' bid='{{blog.id}}'>[删除]</a></dt>
+		            <dd><a href="{% url 'blogs:blog_detail' blog.id%}">{{blog.blog_text}}</a></dd>
                 </dl>
                 {% empty %}
                 <dl>
@@ -55,6 +55,7 @@
 <script src="{% static 'js/personal-center-mycollectons.js'%}" type="text/javascript" charset="utf-8"></script>
 <script>
 $(function(){
+    //下面是删除收藏夹
     $('.glyphicon-trash').click(function(){
         var bookmark_id=$(this).attr('bid');
         var this_trash=$(this);
@@ -79,6 +80,29 @@ $(function(){
         })//这是ajax的结尾
         }//这是if的结尾 
     })//这是删除收藏夹的click的结尾
+
+    //下面是删除收藏的博客
+    $('.delete-cl').click(function(){
+        var blog_id=$(this).attr('bid');
+        var c=confirm('确定取消对这篇博客的收藏吗？')
+        if(c==true){
+            $.ajax({
+                type:'GET',
+                url:"{% url 'operations:collect'%}",
+                data:{
+                    blog_id:blog_id,
+                },
+                success:function(callback){
+                    if(callback.status=='ok'){
+                        window.location.reload()
+                    }
+                    else{
+                        alert(callback.msg)
+                    }
+                }
+            })
+        }
+    })//这是删除收藏的博客的结尾
 })//这是最外面的function的结尾
 </script>
 {% endblock myjs%}
