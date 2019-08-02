@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect,reverse
 from django.views import View
 from .models import UserThumbup,UserFollow,UserCollect
 from users.models import UserProfile
@@ -163,3 +163,15 @@ class CollectView(View):
                 return JsonResponse({'status':'ok','msg':'[取消收藏]'})
         else:
             return JsonResponse({'status':'fail','msg':'操作失败'})
+
+class MoveView(View):
+    '''这是用户把收藏的博客移动收藏夹的视图类'''
+    def post(self,request,usercollect_id):
+        if usercollect_id:
+            bookmark_id=request.POST.get('bookmark_id','')
+            usercollect=UserCollect.objects.filter(id=int(usercollect_id))[0]
+            usercollect.bookmark_id=int(bookmark_id)
+            usercollect.save()
+            return redirect(reverse('users:mycollections'))
+        else:
+            return redirect(reverse('users:mycollections'))

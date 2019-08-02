@@ -8,4 +8,6 @@ urlpatterns=[
     re_path(r'^follow/$',views.FollowView.as_view(),name='follow'),
     #下面是收藏和取消收藏功能的路由
     re_path(r'^collect/$',views.CollectView.as_view(),name='collect'),
+    #下面是用户移动收藏博客的路由
+    re_path(r'^move/(\d+)/$',views.MoveView.as_view(),name='move'),
 ]

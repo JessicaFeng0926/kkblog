@@ -22,6 +22,26 @@ class UserProfile(AbstractUser):
     def __str__(self):
         '''这是返回的描述'''
         return self.username
+    
+    def get_count(self):
+        '''这里返回未读消息的数量'''
+        from operations.models import UserThumbup,UserFollow,UserComment,UserNotice
+        from blogs.models import Blog
+        from django.db.models import Q
+        follow_num=UserFollow.objects.filter(idol_id=self.id,fstatus=True,is_delete=False,is_read=False).count()
+        notice_num=UserNotice.objects.filter(recipient_id=self.id,is_delete=False,is_read=False).count()
+        blog_list=Blog.objects.filter(author_id=self.id,is_delete=False)
+        thumb_num=UserThumbup.objects.filter(thumbup_blog__in=blog_list,tstatus=True,is_delete=False,is_read=False).count()
+        usercomment_list=UserComment.objects.filter(Q(listener_id=self.id)|Q(comment_blog__in=blog_list),is_delete=False)
+        comment_num=0
+        for comment in usercomment_list:
+            if comment.comment_blog.author == request.user:
+                if not author_read:
+                    comment_num+=1
+            else:
+                if not listener_read:
+                    comment_num+=1
+        return follow_num+notice_num+thumb_num+comment_num
 
     class Meta:
         '''这是元信息类'''

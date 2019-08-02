@@ -149,10 +149,14 @@ dd{
 	color:blue;
 }
 
-/*下面是右侧博客分类的样式*/
+/*下面是右侧收藏夹分类的样式*/
 #right ul{
 	list-style: none;
-	width:1.2rem;
+	
+}
+
+#bookmark-sort{
+    width:1.2rem;
 	height:1.5rem;
 	overflow-y: scroll;
 	overflow-x:hidden;
@@ -170,4 +174,14 @@ h3{
 
 #right{
 	text-align: center;
+}
+
+.glyphicon-trash:hover{
+    color:blue;
+    cursor: pointer;
+}
+
+.errorlist{
+    color:red;
+    font-size: 0.08rem;
 }

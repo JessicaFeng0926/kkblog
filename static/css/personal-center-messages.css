@@ -41,13 +41,16 @@
 }
 
 /*下面是删除按钮的样式*/
-.delete-msg{
+.delete-msg,.read-msg{
 	color:cornflowerblue;
 	display:none;
 }
 
 .delete-msg:hover{
 	color:blue;
+}
+.read-msg:hover{
+    color:blue;
 }
 
 /*下面是建议去广场的人名a标签的样式*/
@@ -59,4 +62,12 @@
 /*下面是右边的消息分类的样式*/
 #right{
     margin-top:0.4rem;
+}
+
+#right ul{
+    list-style: none;
+    width:1.2rem;
+	height:1.5rem;
+	overflow-y: hidden;
+	overflow-x:hidden;
 }

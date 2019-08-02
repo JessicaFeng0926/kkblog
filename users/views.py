@@ -3,7 +3,7 @@ from django.views import View
 from .forms import UserRegisterForm,UserLoginForm,UserForgetForm,UserResetForm,UserPersonalCenterForm,NewTopicForm,NewBookmarkForm,NewBlogForm
 from .models import UserProfile,EmailVerifyCode
 from blogs.models import Topic,CollectBookMark,Blog
-from operations.models import UserThumbup,UserFollow,UserCollect
+from operations.models import UserThumbup,UserFollow,UserCollect,UserComment,UserNotice
 from django.db.models import Q
 from django.contrib.auth import authenticate,login,logout
 from tools.send_mail_tool import send_email_code
@@ -26,11 +26,17 @@ def index(request):
     category=request.GET.get('category','')
     if category:
         blog_list=blog_list.filter(category=category)
+
+    #如果传来了搜索的关键词，就要重新筛选
+    search=request.GET.get('search','')
+    if search:
+        blog_list=blog_list.filter(Q(blog_text__icontains=search)|Q(blog_title__icontains=search))
     
     blog_list=blog_list[:100]
     #按照访问量返回热门博主
     author_list=UserProfile.objects.exclude(is_superuser=True).order_by('-visit_num')[:5]
-    return render(request,'index.html',{'author_list':author_list,'blog_list':blog_list,'sort':sort,'category':category})
+
+    return render(request,'index.html',{'author_list':author_list,'blog_list':blog_list,'sort':sort,'category':category,'search':search})
 
 class UserLoginView(View):
     '''这是用户登录的视图'''
@@ -521,4 +527,122 @@ class EditBlogView(View):
             topic_list=Topic.objects.filter(owner=request.user,is_delete=False)
             return render(request,'users/edit-blog.html',{'blog':blog,'topic_list':topic_list,'editblog_form':editblog_form})
 
+class CollectionMoveView(View):
+    '''这是移动收藏的博客的视图类'''
+    def get(self,request,blog_id):
+        if blog_id:
+            #先看看要移动的博客是否在收藏记录里面
+            usercollect_list=UserCollect.objects.filter(collector=request.user,collect_blog_id=int(blog_id),cstatus=True)
+            #存在就返回所有收藏夹的名字，以及这条收藏记录
+            if usercollect_list:
+                usercollect=usercollect_list[0]
+                bookmark_list=CollectBookMark.objects.filter(owner=request.user,is_delete=False)
+                return render(request,'users/personal-center-mycollection-move.html',{'usercollect':usercollect,'bookmark_list':bookmark_list})
+            #不存在就重定向到我的收藏页面
+            else:
+                return redirect(reverse('users:mycollections'))
+    def post(self,request,blog_id):
+        '''因为这个页面有两个form，
+        所以我把这个post用作处理新建主题，
+        移动的在operations里面有个单独的视图'''
+        new_bookmark_form=NewBookmarkForm(request.POST)
+        #还要获取用户的这条收藏记录以及所有的收藏夹
+        usercollect=UserCollect.objects.filter(collector=request.user,collect_blog_id=int(blog_id),cstatus=True)[0]
+        bookmark_list=CollectBookMark.objects.filter(owner=request.user,is_delete=False)
+        if new_bookmark_form.is_valid():
+            bookmark_name=new_bookmark_form.cleaned_data['bookmark_name']
+            new_bookmark=CollectBookMark()
+            new_bookmark.bookmark_name=bookmark_name
+            new_bookmark.owner=request.user
+            new_bookmark.save()
+            return render(request,'users/personal-center-mycollection-move.html',{'usercollect':usercollect,'bookmark_list':bookmark_list})
+        #无效就记得把表单类对象也传回去，里面包含错误信息
+        else:
+            return render(request,'users/personal-center-mycollection-move.html',{'usercollect':usercollect,'bookmark_list':bookmark_list,'new_bookmark_form':new_bookmark_form})
 
+class MessagesView(View):
+    '''这是我的消息的视图类'''
+    def get(self,request):
+        #所有的关注
+        userfollow_list=UserFollow.objects.filter(idol_id=request.user.id,fstatus=True,is_delete=False).order_by('-addtime')
+        
+        #所有的赞
+        blog_list=Blog.objects.filter(author=request.user,is_delete=False)
+        userthumb_list=UserThumbup.objects.filter(thumbup_blog__in=blog_list,tstatus=True,is_delete=False).order_by('-addtime')
+
+        #所有的评论
+        usercomment_list=UserComment.objects.filter(Q(listener_id=request.user.id)|Q(comment_blog__in=blog_list),is_delete=False).order_by('-addtime')
+
+        #所有的系统通知
+        usernotice_list=UserNotice.objects.filter(recipient=request.user,is_delete=False).order_by('-addtime')
+        
+        #未读的赞的数量
+        thumb_num=userthumb_list.filter(is_read=False).count()
+        #未读的关注的数量
+        follow_num=userfollow_list.filter(is_read=False).count()
+        #未读的系统通知的数量
+        notice_num=usernotice_list.filter(is_read=False).count()
+        #未读的评论的数量
+        comment_num=0
+        for comment in usercomment_list:
+            if comment.comment_blog.author == request.user:
+                if not author_read:
+                    comment_num+=1
+            else:
+                if not listener_read:
+                    comment_num+=1
+
+        #如果用户传来了分类，那就重新筛选
+        sort=request.GET.get('sort')
+        if sort:
+            if sort == 'comment':
+                userfollow_list=userfollow_list.filter(addtime=datetime(1969,6,7))
+                userthumb_list=userthumb_list.filter(addtime=datetime(1969,6,7))
+                usernotice_list=usernotice_list.filter(addtime=datetime(1969,6,7))
+            elif sort == 'thumb':
+                usercomment_list=usercomment_list.filter(addtime=datetime(1969,6,7))
+                userfollow_list=userfollow_list.filter(addtime=datetime(1969,6,7))
+                usernotice_list=usernotice_list.filter(addtime=datetime(1969,6,7))
+            elif sort == 'follow':
+                usercomment_list=usercomment_list.filter(addtime=datetime(1969,6,7))
+                userthumb_list=userthumb_list.filter(addtime=datetime(1969,6,7))
+                usernotice_list=usernotice_list.filter(addtime=datetime(1969,6,7))
+            elif sort == 'notice':
+                usercomment_list=usercomment_list.filter(addtime=datetime(1969,6,7))
+                userthumb_list=userthumb_list.filter(addtime=datetime(1969,6,7))
+                userfollow_list=userfollow_list.filter(addtime=datetime(1969,6,7))
+        
+        #按照用户传来的已读未读状态来筛选
+        read=request.GET.get('read','')
+        if read == 'no':
+            usercomment_list_copy=usercomment_list[:]
+            usercomment_list=[]
+            for usercomment in usercomment_list_copy:
+                #如果评论的是我的博客，author是我，listenr不一定是我，我能控制的是author的阅读状态
+                if usercomment.comment_blog.author_id ==  request.user.id:
+                    if not usercomment.author_read:
+                        usercomment_list.append(usercomment)
+                #如果评论的是别人的博客，listener是我，author不是我，我能控制的是listener的阅读状态
+                else:
+                    if not usercomment.listener_read:
+                        usercomment_list.append(usercomment)
+            userfollow_list=userfollow_list.filter(is_read=False)
+            userthumb_list=userthumb_list.filter(is_read=False)
+            usernotice_list=usernotice_list.filter(is_read=False)
+        elif read == 'yes':
+            usercomment_list_copy=usercomment_list[:]
+            usercomment_list=[]
+            for usercomment in usercomment_list_copy:
+                if usercomment.comment_blog.author_id == request.user.id:
+                    if usercomment.author_read:
+                        usercomment_list.append(usercomment)
+                else:
+                    if usercomment.listener_read:
+                        usercomment_list.append(usercomment)
+            userfollow_list=userfollow_list.filter(is_read=True)
+            userthumb_list=userthumb_list.filter(is_read=True)
+            usernotice_list=usernotice_list.filter(is_read=True)
+        
+        return render(request,'users/personal-center-messages.html',{'userfollow_list':userfollow_list,'userthumb_list':userthumb_list,'usercomment_list':usercomment_list,'usernotice_list':usernotice_list,'sort':sort,'read':read,'follow_num':follow_num,'notice_num':notice_num,'thumb_num':thumb_num,'comment_num':comment_num})
+            
+        

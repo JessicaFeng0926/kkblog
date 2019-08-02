@@ -163,14 +163,19 @@ dd{
 
 /*下面是右侧博客分类的样式*/
 #time-sort,#topic-sort{
-	list-style: none;
+	
 	width:1.2rem;
 	height:1.5rem;
 	overflow-y: scroll;
 	overflow-x:hidden;
 }
+
+#right ul{
+    list-style: none;
+}
 #right{
-	text-align: center;
+    text-align: center;
+    
 }
 #right li{
 	text-align: center;

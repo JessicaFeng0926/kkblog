@@ -23,7 +23,7 @@
                 {% empty %}
 		        <dl>
 		            <dt>没有内容</dt>
-		            <dd>快去写一篇博客吧<a href="#" style="font-weight: bold;text-decoration: underline">写博客</a></dd>
+		            <dd>快去写一篇博客吧<a href="{% url 'users:write_blog'%}" style="font-weight: bold;text-decoration: underline">写博客</a></dd>
                 </dl>
                 {% endfor %}
 		        

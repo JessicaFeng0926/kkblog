@@ -11,14 +11,14 @@
 <!--下面是左边的博客分类-->
 <ul id='left'>
     <li>博客分类</li>
-    <li {% if category == '' %}class='active1'{% endif %}><a href="?category=&sort={{sort}}">全部</a></li>
-    <li {% if category == 'lr' %}class='active1'{% endif %}><a href="?category=lr&sort={{sort}}">文学</a></li>
-    <li {% if category == 'art' %}class='active1'{% endif %}><a href="?category=art&sort={{sort}}">艺术</a></li>
-    <li {% if category == 'emo' %}class='active1'{% endif %}><a href="?category=emo&sort={{sort}}">情感</a></li>
-    <li {% if category == 'tech' %}class='active1'{% endif %}><a href="?category=tech&sort={{sort}}">科技</a></li>
-    <li {% if category == 'hth' %}class='active1'{% endif %}><a href="?category=hth&sort={{sort}}">健康</a></li>
-    <li {% if category == 'bt' %}class='active1' {% endif %}><a href="?category=bt&sort={{sort}}">美妆</a></li>
-    <li {% if category == 'oth' %}class = 'active1'{% endif %}><a href="?category=oth&sort={{sort}}">其他</a></li>
+    <li {% if category == '' %}class='active1'{% endif %}><a href="?category=&sort={{sort}}&search={{search}}">全部</a></li>
+    <li {% if category == 'lr' %}class='active1'{% endif %}><a href="?category=lr&sort={{sort}}&search={{search}}">文学</a></li>
+    <li {% if category == 'art' %}class='active1'{% endif %}><a href="?category=art&sort={{sort}}&search={{search}}">艺术</a></li>
+    <li {% if category == 'emo' %}class='active1'{% endif %}><a href="?category=emo&sort={{sort}}&search={{search}}">情感</a></li>
+    <li {% if category == 'tech' %}class='active1'{% endif %}><a href="?category=tech&sort={{sort}}&search={{search}}">科技</a></li>
+    <li {% if category == 'hth' %}class='active1'{% endif %}><a href="?category=hth&sort={{sort}}&search={{search}}">健康</a></li>
+    <li {% if category == 'bt' %}class='active1' {% endif %}><a href="?category=bt&sort={{sort}}&search={{search}}">美妆</a></li>
+    <li {% if category == 'oth' %}class = 'active1'{% endif %}><a href="?category=oth&sort={{sort}}&search={{search}}">其他</a></li>
     
 
 </ul>
@@ -27,8 +27,8 @@
 <!--下面是中间展示的博客-->
 <div id='middle'>
     <ul id='blogs-sort'>
-        <li {% if sort == 'hot' or sort == '' %}class='active2'{% endif %}><a href="?sort=hot&category={{category}}">最热↓</a></li>
-        <li {% if sort == 'new' %}class='active2'{% endif %}><a href="?sort=new&category={{category}}">最新↓</a></li>
+        <li {% if sort == 'hot' or sort == '' %}class='active2'{% endif %}><a href="?sort=hot&category={{category}}&search={{search}}">最热↓</a></li>
+        <li {% if sort == 'new' %}class='active2'{% endif %}><a href="?sort=new&category={{category}}&search={{search}}">最新↓</a></li>
     </ul>
     
     <div id='blogs-display'>
