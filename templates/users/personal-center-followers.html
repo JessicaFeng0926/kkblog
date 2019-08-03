@@ -10,7 +10,7 @@
 <dl id='right'>
         <dt id="total_num">共有{{request.user.fan_num}}位粉丝</dt>
         
-        {% for fan in fan_list %}
+        {% for fan in current_page %}
         <dd>
             <a><img {% if fan.image %}src="{{MEDIA_URL}}{{fan.image}}"{% else %} src="{% static 'img/noimage.jpg'%}"{% endif%} class='img-circle'/></a>
             <a {% if fan.nickname %}title="{{fan.nickname}}"{% else %}title="{{fan.username}}"{% endif %} href="{% url 'blogs:blog_list' fan.id%}">{% if fan.nickname %}{{fan.nickname|slice:':8'}}{% else %}{{fan.username|slice:':8'}}{% endif %}<span {% if fan.is_mutual %} style='display:inline'{% else %}style='display:none'{% endif %} class='mutual-span'>[互相关注]</span></a>
@@ -25,6 +25,19 @@
         
         
     </dl>
+    <div id='pagebox'>
+            <ul id='pagelist'>
+                {% if current_page.has_previous%}
+                <a href="?pagenum={{current_page.previous_page_number}}"><li class='long'>上一页</li></a>
+                {% endif %}
+                {% for pagenum in current_page.paginator.page_range%}
+                <a href="?pagenum={{pagenum}}"><li {% if pagenum == current_page.number %}class='short chosen'{% else %}class='short'{% endif %}>{{pagenum}}</li></a>
+                {% endfor %}
+                {% if current_page.has_next %}
+                <a href="pagenum={{current_page.next_page_number}}"><li class='long'>下一页</li></a>
+                {% endif %}
+            </ul>
+        </div>
 {% endblock content %}
 
 {% block myjs %}

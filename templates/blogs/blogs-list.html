@@ -23,7 +23,7 @@
 	
 	<!--下面是中间展示的博客-->   
 		<div id='blogs-display'>
-			{% for blog in blog_list %}
+			{% for blog in current_page %}
 			<dl>
 				<dt class='blog-title'><a href="{% url 'blogs:blog_detail' blog.id%}">{{blog.blog_title}}</a><a class='collect' bid='{{blog.id}}'>{% if blog.cstatus %}[取消收藏]{% else %}[收藏]{% endif %}</a></a></dt>
 				<dd><a href="{% url 'blogs:blog_detail'  blog.id%}">{{blog.blog_text|safe|slice:':150'}}……</a></dd>
@@ -34,28 +34,50 @@
 				<dd>去<a style='font-weight: bold;text-decoration: underline' href='/'>博客广场</a>看看吧</dd>
 			</dl>
 			{% endfor %}
+			<div id='pagebox'>
+					<ul id='pagelist'>
+						{% if current_page.has_previous%}
+						<a href="?pagenum={{current_page.previous_page_number}}&topic={{topic_id}}&year={{year}}&month={{month}}"><li class='long'>上一页</li></a>
+						{% endif %}
+						{% for pagenum in current_page.paginator.page_range%}
+						<a href="?pagenum={{pagenum}}&topic={{topic_id}}&year={{year}}&month={{month}}"><li {% if pagenum == current_page.number %}class='short chosen'{% else %}class='short'{% endif %}>{{pagenum}}</li></a>
+						{% endfor %}
+						{% if current_page.has_next %}
+						<a href="pagenum={{current_page.next_page_number}}&topic={{topic_id}}&year={{year}}&month={{month}}"><li class='long'>下一页</li></a>
+						{% endif %}
+					</ul>
+				</div>
 		</div>
 		 
-	</div><!--这是middle的结尾-->
+	
 	
 	<!--下面是右侧热门博主-->
 	<div id='right'>
 		<h3>按时间分类</h3>
 		<ul>
 			{% for time in time_list%}
-			<li {% if year == time.0 and month == time.1 %}class='active1'{% endif %}><a href="?topic={{topic_id}}&year={{time.0}}&month={{time.1}}">{{time.0}}年{{time.1}}月<span class='badge'>{{time.2}}</span></a></li>
+			<li {% if year == time.0 and month == time.1 %}class='active1'{% endif %}><a href="?topic={{topic_id}}&year={{time.0}}&month={{time.1}}&pagenum=">{{time.0}}年{{time.1}}月<span class='badge'>{{time.2}}</span></a></li>
 			{% endfor %}
 		</ul>
 		<h3>按主题分类</h3>
 		<ul>
 			{% for topic in topic_list %}
-			<li {% if topic_id == topic.id %}class='active1'{% endif %}><a title="{{topic.topic_name}}" href="?topic={{topic.id}}&year={{year}}&month={{month}}">{{topic.topic_name|slice:':8'}}<span class='badge'>{{topic.get_count}}</span></a></li>
+			<li {% if topic_id == topic.id %}class='active1'{% endif %}><a title="{{topic.topic_name}}" href="?topic={{topic.id}}&year={{year}}&month={{month}}&pagenum=">{{topic.topic_name|slice:':8'}}<span class='badge'>{{topic.get_count}}</span></a></li>
 			{% endfor %}
 		</ul>
 		
 	</div>
 		
 	</section>
+	<footer>
+		<a href="/"><img src="{% static 'img/logo.jpg'%}" id='footlogo'/></a>
+		<div id="">
+			<img src="{% static 'img/qrcode.png'%}" id='qrcode'/>
+			<div>联系我们</div>
+		</div>
+		<p>Copyright&nbsp;&copy;&nbsp;kkblog&nbsp;2019-2029</p>
+		
+	</footer>
 {% endblock content %}
 
 {% block myjs %}

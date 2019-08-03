@@ -10,4 +10,8 @@ urlpatterns=[
     re_path(r'^collect/$',views.CollectView.as_view(),name='collect'),
     #下面是用户移动收藏博客的路由
     re_path(r'^move/(\d+)/$',views.MoveView.as_view(),name='move'),
+    #下面是用户把消息标位已读的路由
+    re_path(r'^read/$',views.ReadView.as_view(),name='read'),
+    #下面是用户删除消息的路由
+    re_path(r'^delete_msg/$',views.DeleteMsgView.as_view(),name='delete_msg'),
 ]

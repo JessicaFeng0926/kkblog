@@ -11,7 +11,7 @@
         <dt id='total_num'>共关注{{request.user.follow_num}}位博主</dt>
         
         
-        {% for idol in idol_list%}
+        {% for idol in current_page%}
         <dd>
             <a href="{% url 'blogs:blog_list' idol.id%}"><img {% if idol.image %}src="{{MEDIA_URL}}{{idol.image}}"{% else %}src="{% static 'img/noimage.jpg'%}"{% endif %} class='img-circle'/></a>
             <a href="{% url 'blogs:blog_list' idol.id%}">{% if idol.nickname %}{{idol.nickname}}{%else%}{{idol.username}}{% endif %}<span {% if idol.is_mutual%} style='display: inline;'{% else %}style='display:none'{% endif %}>[互相关注]</span></a>
@@ -25,6 +25,19 @@
         
         
     </dl>
+    <div id='pagebox'>
+            <ul id='pagelist'>
+                {% if current_page.has_previous%}
+                <a href="?pagenum={{current_page.previous_page_number}}"><li class='long'>上一页</li></a>
+                {% endif %}
+                {% for pagenum in current_page.paginator.page_range%}
+                <a href="?pagenum={{pagenum}}"><li {% if pagenum == current_page.number %}class='short chosen'{% else %}class='short'{% endif %}>{{pagenum}}</li></a>
+                {% endfor %}
+                {% if current_page.has_next %}
+                <a href="pagenum={{current_page.next_page_number}}"><li class='long'>下一页</li></a>
+                {% endif %}
+            </ul>
+        </div>
 {% endblock content%}
 
 {% block myjs %}

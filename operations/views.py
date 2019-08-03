@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,reverse
 from django.views import View
-from .models import UserThumbup,UserFollow,UserCollect
+from .models import UserThumbup,UserFollow,UserCollect,UserComment,UserNotice
 from users.models import UserProfile
 from blogs.models import CollectBookMark
 from django.http import JsonResponse
@@ -175,3 +175,87 @@ class MoveView(View):
             return redirect(reverse('users:mycollections'))
         else:
             return redirect(reverse('users:mycollections'))
+
+class ReadView(View):
+    '''这是用户把消息标位已读的视图类'''
+    def get(self,request):
+        mid=request.GET.get('mid','')
+        mtype=request.GET.get('mtype','')
+        if mid and mtype:
+            #如果是评论
+            if mtype == 'c':
+                usercomment=UserComment.objects.filter(id=int(mid))[0]
+                #如果博主是我
+                if usercomment.comment_blog.author == request.user:
+                    #如果听话人也是我
+                    if usercomment.listener_id == request.user.id:
+                        usercomment.author_read=True
+                        usercomment.listener_read=True
+                    #如果听话人不是我
+                    else:
+                        usercomment.author_read=True
+                #如果博主不是我
+                else:
+                    usercomment.listener_read=True
+                usercomment.save()
+            #如果是通知
+            elif mtype == 'n':
+                usernotice=UserNotice.objects.filter(id=int(mid))[0]
+                usernotice.is_read=True
+                usernotice.save()
+            #如果是赞
+            elif mtype == 't':
+                userthumb=UserThumbup.objects.filter(id=int(mid))[0]
+                userthumb.is_read=True
+                userthumb.save()
+            #如果是关注
+            elif mtype == 'f':
+                userfollow=UserFollow.objects.filter(id=int(mid))[0]
+                userfollow.is_read=True
+                userfollow.save()
+            return JsonResponse({'status':'ok','msg':'消息标记成功'})
+        else:
+            return JsonResponse({'status':'fail','msg':'操作失败'})
+
+class DeleteMsgView(View):
+    '''这是删除消息的视图类'''
+    def get(self,request):
+        mid=request.GET.get('mid')
+        mtype=request.GET.get('mtype')
+        if mid and mtype:
+            #如果是评论
+            if mtype == 'c':
+                usercomment=UserComment.objects.filter(id=int(mid))[0]
+                #如果博主是我
+                if usercomment.comment_blog.author == request.user:
+                    #如果听话人也是我
+                    if usercomment.listener_id == request.user.id:
+                        usercomment.author_del = True
+                        usercomment.listener_del = True
+                    #如果听话人不是我
+                    else:
+                        usercomment.author_del=True
+                #如果博主不是我
+                else:
+                    usercomment.listener_del=True
+                usercomment.save()
+
+
+            #如果是通知
+            elif mtype == 'n':
+                usernotice=UserNotice.objects.filter(id=int(mid))[0]
+                usernotice.is_delete=True
+                usernotice.save()
+            #如果是点赞
+            elif mtype == 't':
+                userthumb=UserThumbup.objects.filter(id=int(mid))[0]
+                userthumb.is_delete=True
+                userthumb.save()
+            #如果是关注
+            elif mtype == 'f':
+                userfollow=UserFollow.objects.filter(id=int(mid))[0]
+                userfollow.is_delete=True
+                userfollow.save()
+            return JsonResponse({'status':'ok','msg':'消息删除成功'})
+        else:
+            return JsonResponse({'status':'fail','msg':'操作失败'})

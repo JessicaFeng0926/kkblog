@@ -1,0 +1,33 @@
+/*这是页脚的样式*/
+footer{
+    margin-top: 3rem;
+	height:1rem;
+	background-color:#888;
+	z-index: 999;
+	position:relative;
+	display:flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-around;
+	align-content: space-around;
+	color:white;
+}
+
+#footlogo{
+	height:0.5rem;
+	width:0.5rem;
+}
+
+#qrcode{
+	width:0.5rem;
+	height: 0.5rem;
+}
+
+footer p{
+	width:10rem;
+	text-align: center;
+}
+
+footer div{
+	text-align: center;
+}

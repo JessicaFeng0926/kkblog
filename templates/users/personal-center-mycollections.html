@@ -11,7 +11,7 @@
 <section id="main">
         <!--下面是中间展示的博客-->   
             <div id='blogs-display'>
-                {% for blog in blog_list%}
+                {% for blog in current_page%}
 		        <dl>
 		            <dt class='blog-title'><a href="{% url 'blogs:blog_detail' blog.id%}">{{blog.blog_title}}</a><a class='move' href="{% url 'users:collection_move' blog.id%}">[移动]</a><a class='delete-cl' bid='{{blog.id}}'>[删除]</a></dt>
 		            <dd><a href="{% url 'blogs:blog_detail' blog.id%}">{{blog.blog_text|safe|slice:':150'}}……</a></dd>
@@ -22,17 +22,29 @@
                     <dd>快去<a href="/" style='font-weight: bold;text-decoration: underline'>博客广场</a>看看吧</dd>
                 </dl>
                 {% endfor %}
-		        
+		        <div id='pagebox'>
+                        <ul id='pagelist'>
+                            {% if current_page.has_previous%}
+                            <a href="?pagenum={{current_page.previous_page_number}}&bookmark={{bookmark_id}}"><li class='long'>上一页</li></a>
+                            {% endif %}
+                            {% for pagenum in current_page.paginator.page_range%}
+                            <a href="?pagenum={{pagenum}}&bookmark={{bookmark_id}}"><li {% if pagenum == current_page.number %}class='short chosen'{% else %}class='short'{% endif %}>{{pagenum}}</li></a>
+                            {% endfor %}
+                            {% if current_page.has_next %}
+                            <a href="pagenum={{current_page.next_page_number}}&bookmark={{bookmark_id}}"><li class='long'>下一页</li></a>
+                            {% endif %}
+                        </ul>
+                    </div>
 	        </div>
 	         
-        </div><!--这是middle的结尾-->
+        
         
         <!--下面是右侧的收藏夹分类以及新建收藏夹-->
         <div id='right'>
             <h3>我的收藏夹</h3>
             <ul id='bookmark-sort'>
                 {% for bookmark in bookmark_list %}
-                <li {% if bookmark_id == bookmark.id %} class='active1' {% endif %}><a  href="?bookmark={{bookmark.id}}">{{bookmark.bookmark_name}}<span class=badge>{{bookmark.get_count}}</span></a>{% if bookmark.get_count == 0 and not bookmark.is_default %}<span class='glyphicon glyphicon-trash' title='删除' bid='{{bookmark.id}}'></span>{% endif %}</li>
+                <li {% if bookmark_id == bookmark.id %} class='active1' {% endif %}><a  href="?bookmark={{bookmark.id}}&pagenum=">{{bookmark.bookmark_name}}<span class=badge>{{bookmark.get_count}}</span></a>{% if bookmark.get_count == 0 and not bookmark.is_default %}<span class='glyphicon glyphicon-trash' title='删除' bid='{{bookmark.id}}'></span>{% endif %}</li>
                 {% endfor %}
             </ul>
             <form action="{% url 'users:mycollections' %}" method='POST'>

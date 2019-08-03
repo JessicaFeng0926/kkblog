@@ -2,9 +2,10 @@ from django.shortcuts import render,redirect,reverse
 from django.views import View
 from .models import Topic,Blog,CollectBookMark
 from users.models import UserProfile
-from operations.models import UserFollow,UserThumbup,UserCollect
+from operations.models import UserFollow,UserThumbup,UserCollect,UserComment
 from django.http import JsonResponse
 from users.views import get_data_list
+from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 # Create your views here.
 
 class DeleteTopicView(View):
@@ -97,7 +98,17 @@ class BlogListView(View):
                         for blog in blog_list_copy:
                             if blog.addtime.year==year and blog.addtime.month==month:
                                 blog_list.append(blog)
-                    return render(request,'blogs/blogs-list.html',{'author':author,'blog_list':blog_list,'topic_list':topic_list,'time_list':time_list,'fstatus':fstatus,'is_mutual':is_mutual,'topic_id':topic_id,'year':year,'month':month})
+
+                    #分页
+                    pa=Paginator(blog_list,20)
+                    pagenum=request.GET.get('pagenum','')
+                    try:
+                        current_page=pa.get_page(pagenum)
+                    except PageNotAnInteger:
+                        current_page=pa.get_page(1)
+                    except EmptyPage:
+                        current_page=pa.get_page(pa.num_pages)
+                    return render(request,'blogs/blogs-list.html',{'author':author,'topic_list':topic_list,'time_list':time_list,'fstatus':fstatus,'is_mutual':is_mutual,'topic_id':topic_id,'year':year,'month':month,'current_page':current_page})
                 else:
                     return redirect(reverse('index'))
 
@@ -143,7 +154,13 @@ class BlogDetailView(View):
                     data_list=get_data_list(blog.author)
                     topic_list=data_list[0]
                     time_list=data_list[2]
-                    return render(request,'blogs/blog-detail.html',{'blog':blog,'topic_list':topic_list,'time_list':time_list,'tstatus':tstatus,'fstatus':fstatus,'is_mutual':is_mutual,'cstatus':cstatus})
+
+                    #查看本篇博客的所有评论
+                    usercomment_list=UserComment.objects.filter(comment_blog=blog,is_delete=False)
+                    for usercomment in usercomment_list:
+                        usercomment.listener=UserProfile.objects.filter(id=usercomment.listener_id)[0]
+
+                    return render(request,'blogs/blog-detail.html',{'blog':blog,'topic_list':topic_list,'time_list':time_list,'tstatus':tstatus,'fstatus':fstatus,'is_mutual':is_mutual,'cstatus':cstatus,'usercomment_list':usercomment_list})
             else:
                 return redirect(reverse('index'))
 

@@ -11,14 +11,14 @@
 <!--下面是左边的博客分类-->
 <ul id='left'>
     <li>博客分类</li>
-    <li {% if category == '' %}class='active1'{% endif %}><a href="?category=&sort={{sort}}&search={{search}}">全部</a></li>
-    <li {% if category == 'lr' %}class='active1'{% endif %}><a href="?category=lr&sort={{sort}}&search={{search}}">文学</a></li>
-    <li {% if category == 'art' %}class='active1'{% endif %}><a href="?category=art&sort={{sort}}&search={{search}}">艺术</a></li>
-    <li {% if category == 'emo' %}class='active1'{% endif %}><a href="?category=emo&sort={{sort}}&search={{search}}">情感</a></li>
-    <li {% if category == 'tech' %}class='active1'{% endif %}><a href="?category=tech&sort={{sort}}&search={{search}}">科技</a></li>
-    <li {% if category == 'hth' %}class='active1'{% endif %}><a href="?category=hth&sort={{sort}}&search={{search}}">健康</a></li>
-    <li {% if category == 'bt' %}class='active1' {% endif %}><a href="?category=bt&sort={{sort}}&search={{search}}">美妆</a></li>
-    <li {% if category == 'oth' %}class = 'active1'{% endif %}><a href="?category=oth&sort={{sort}}&search={{search}}">其他</a></li>
+    <li {% if category == '' %}class='active1'{% endif %}><a href="?category=&sort={{sort}}&search={{search}}&pagenum=">全部</a></li>
+    <li {% if category == 'lr' %}class='active1'{% endif %}><a href="?category=lr&sort={{sort}}&search={{search}}&pagenum=">文学</a></li>
+    <li {% if category == 'art' %}class='active1'{% endif %}><a href="?category=art&sort={{sort}}&search={{search}}&pagenum=">艺术</a></li>
+    <li {% if category == 'emo' %}class='active1'{% endif %}><a href="?category=emo&sort={{sort}}&search={{search}}&pagenum=">情感</a></li>
+    <li {% if category == 'tech' %}class='active1'{% endif %}><a href="?category=tech&sort={{sort}}&search={{search}}&pagenum=">科技</a></li>
+    <li {% if category == 'hth' %}class='active1'{% endif %}><a href="?category=hth&sort={{sort}}&search={{search}}&pagenum=">健康</a></li>
+    <li {% if category == 'bt' %}class='active1' {% endif %}><a href="?category=bt&sort={{sort}}&search={{search}}&pagenum=">美妆</a></li>
+    <li {% if category == 'oth' %}class = 'active1'{% endif %}><a href="?category=oth&sort={{sort}}&search={{search}}&pagenum=">其他</a></li>
     
 
 </ul>
@@ -27,12 +27,12 @@
 <!--下面是中间展示的博客-->
 <div id='middle'>
     <ul id='blogs-sort'>
-        <li {% if sort == 'hot' or sort == '' %}class='active2'{% endif %}><a href="?sort=hot&category={{category}}&search={{search}}">最热↓</a></li>
-        <li {% if sort == 'new' %}class='active2'{% endif %}><a href="?sort=new&category={{category}}&search={{search}}">最新↓</a></li>
+        <li {% if sort == 'hot' or sort == '' %}class='active2'{% endif %}><a href="?sort=hot&category={{category}}&search={{search}}&pagenum">最热↓</a></li>
+        <li {% if sort == 'new' %}class='active2'{% endif %}><a href="?sort=new&category={{category}}&search={{search}}&pagenum=">最新↓</a></li>
     </ul>
     
     <div id='blogs-display'>
-    {% for blog in blog_list%}
+    {% for blog in current_page%}
     <dl>
         <dt><a href="{% url 'blogs:blog_detail' blog.id%}">{{blog.blog_title}}</a></dt>
         <dd><a href="{% url 'blogs:blog_detail' blog.id%}">{{blog.blog_text|safe|slice:':150'}}……</a></dd>
@@ -43,6 +43,19 @@
         <dd>去<a href="/" style='font-weight: bold;text-decoration: underline;'>博客广场</a>看看吧</dd>
     </dl>
     {% endfor %}
+    <div id='pagebox'>
+        <ul id='pagelist'>
+            {% if current_page.has_previous%}
+            <a href="?pagenum={{current_page.previous_page_number}}&category={{category}}&sort={{sort}}&search={{search}}"><li class='long'>上一页</li></a>
+            {% endif %}
+            {% for pagenum in current_page.paginator.page_range%}
+            <a href="?pagenum={{pagenum}}&category={{category}}&sort={{sort}}&search={{search}}"><li {% if pagenum == current_page.number %}class='short chosen'{% else %}class='short'{% endif %}>{{pagenum}}</li></a>
+            {% endfor %}
+            {% if current_page.has_next %}
+            <a href="pagenum={{current_page.next_page_number}}&category={{category}}&sort={{sort}}&search={{search}}"><li class='long'>下一页</li></a>
+            {% endif %}
+        </ul>
+    </div>
     </div>
      
 </div><!--这是middle的结尾-->
@@ -66,6 +79,15 @@
 </div>
 
 </section>
+<footer>
+    <a href="/"><img src="{% static 'img/logo.jpg'%}" id='footlogo'/></a>
+    <div id="">
+        <img src="{% static 'img/qrcode.png'%}" id='qrcode'/>
+        <div>联系我们</div>
+    </div>
+    <p>Copyright&nbsp;&copy;&nbsp;kkblog&nbsp;2019-2029</p>
+    
+</footer>
 {% endblock content %}
         
 		

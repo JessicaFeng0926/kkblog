@@ -8,6 +8,7 @@ from django.db.models import Q
 from django.contrib.auth import authenticate,login,logout
 from tools.send_mail_tool import send_email_code
 from django.http import HttpResponse
+from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 from datetime import datetime
 # Create your views here.
 
@@ -33,10 +34,21 @@ def index(request):
         blog_list=blog_list.filter(Q(blog_text__icontains=search)|Q(blog_title__icontains=search))
     
     blog_list=blog_list[:100]
+
+    #给博客分页
+    pa=Paginator(blog_list,20)
+    pagenum=request.GET.get('pagenum','')
+    try:
+        current_page=pa.get_page(pagenum)
+    except PageNotAnInteger:
+        current_page=pa.get_page(1)
+    except EmptyPage:
+        current_page=pa.get_page(pa.num_pages)
+
     #按照访问量返回热门博主
     author_list=UserProfile.objects.exclude(is_superuser=True).order_by('-visit_num')[:5]
 
-    return render(request,'index.html',{'author_list':author_list,'blog_list':blog_list,'sort':sort,'category':category,'search':search})
+    return render(request,'index.html',{'author_list':author_list,'current_page':current_page,'sort':sort,'category':category,'search':search})
 
 class UserLoginView(View):
     '''这是用户登录的视图'''
@@ -326,7 +338,17 @@ class MyblogsView(View):
             for blog in blog_list_copy:
                 if blog.addtime.year==year and blog.addtime.month==month:
                     blog_list.append(blog)
-        return render(request,'users/personal-center-myblogs.html',{'topic_list':topic_list,'blog_list':blog_list,'time_list':time_list,'topic_id':topic_id,'year':year,'month':month})
+
+        #分页
+        pa=Paginator(blog_list,20)
+        pagenum=request.GET.get('pagenum','')
+        try:
+            current_page=pa.get_page(pagenum)
+        except PageNotAnInteger:
+            current_page=pa.get_page(1)
+        except EmptyPage:
+            current_page=pa.get_page(pa.num_pages)
+        return render(request,'users/personal-center-myblogs.html',{'topic_list':topic_list,'blog_list':blog_list,'time_list':time_list,'topic_id':topic_id,'year':year,'month':month,'current_page':current_page})
     def post(self,request):
         '''这是处理用户post新建话题的方法'''
         new_topic_form=NewTopicForm(request.POST)
@@ -388,7 +410,8 @@ class MyBlogDetailView(View):
 class MyFollowView(View):
     '''这是我的关注页面的视图类'''
     def get(self,request):
-        idol_list=[]
+        current_page=[]
+
         #先看看用户有没有关注别人
         userfollow_list=UserFollow.objects.filter(oneself=request.user,fstatus=True).order_by('-addtime')
         if userfollow_list:
@@ -401,11 +424,22 @@ class MyFollowView(View):
                     idol.is_mutual=True
                 else:
                     idol.is_mutual=False
-        return render(request,'users/personal-center-following.html',{'idol_list':idol_list})
+            
+            #分页
+            pa=Paginator(idol_list,30)
+            pagenum=request.GET.get('pagenum','')
+            try:
+                current_page=pa.get_page(pagenum)
+            except PageNotAnInteger:
+                current_page=pa.get_page(1)
+            except EmptyPage:
+                current_page=pa.get_page(pa.num_pages)
+        return render(request,'users/personal-center-following.html',{'current_page':current_page})
 
 class MyFansView(View):
     '''这是我的粉丝的视图类'''
     def get(self,request):
+        current_page=[]
         #先看看有没有人关注我
         userfollow_list=UserFollow.objects.filter(idol_id=request.user.id,fstatus=True)
         #如果有，就把这些人都拿出来
@@ -418,7 +452,16 @@ class MyFansView(View):
                     fan.is_mutual=True
                 else:
                     fan.is_mutual=False
-        return render(request,'users/personal-center-followers.html',{'fan_list':fan_list})
+            #分页
+            pa=Paginator(fan_list,30)
+            pagenum=request.GET.get('pagenum','')
+            try:
+                current_page=pa.get_page(pagenum)
+            except PageNotAnInteger:
+                current_page=pa.get_page(1)
+            except EmptyPage:
+                current_page=pa.get_page(pa.num_pages)
+        return render(request,'users/personal-center-followers.html',{'current_page':current_page})
 
 class MyCollectionsView(View):
     '''这是我的收藏的视图类'''
@@ -435,6 +478,15 @@ class MyCollectionsView(View):
 
             blog_list=[usercollect.collect_blog for usercollect in usercollect_list]
         
+        #分页
+        pa=Paginator(blog_list,20)
+        pagenum=request.GET.get('pagenum','')
+        try:
+            current_page=pa.get_page(pagenum)
+        except PageNotAnInteger:
+            current_page=pa.get_page(1)
+        except EmptyPage:
+            current_page=pa.get_page(pa.num_pages)
         #如果该用户从未收藏过任何博客，他也可以点收藏夹点着玩儿,还是要把收藏夹的id传回去
         bookmark_id=request.GET.get('bookmark','')
         if bookmark_id:
@@ -443,7 +495,7 @@ class MyCollectionsView(View):
         #找出所有的收藏夹信息
         bookmark_list=CollectBookMark.objects.filter(owner=request.user,is_delete=False)
         
-        return render(request,'users/personal-center-mycollections.html',{'blog_list':blog_list,'bookmark_list':bookmark_list,'bookmark_id':bookmark_id})
+        return render(request,'users/personal-center-mycollections.html',{'current_page':current_page,'bookmark_list':bookmark_list,'bookmark_id':bookmark_id})
     def post(self,request):
         '''这是处理新建收藏夹的方法'''
         blog_list=[]
@@ -586,10 +638,10 @@ class MessagesView(View):
         comment_num=0
         for comment in usercomment_list:
             if comment.comment_blog.author == request.user:
-                if not author_read:
+                if not comment.author_read and not comment.author_del:
                     comment_num+=1
             else:
-                if not listener_read:
+                if not comment.listener_read and not comment.listener_del:
                     comment_num+=1
 
         #如果用户传来了分类，那就重新筛选
@@ -620,12 +672,14 @@ class MessagesView(View):
             for usercomment in usercomment_list_copy:
                 #如果评论的是我的博客，author是我，listenr不一定是我，我能控制的是author的阅读状态
                 if usercomment.comment_blog.author_id ==  request.user.id:
-                    if not usercomment.author_read:
+                    if not usercomment.author_read and not usercomment.author_del:
                         usercomment_list.append(usercomment)
                 #如果评论的是别人的博客，listener是我，author不是我，我能控制的是listener的阅读状态
                 else:
-                    if not usercomment.listener_read:
+                    if not usercomment.listener_read and not usercomment.listener_del:
                         usercomment_list.append(usercomment)
+            for usercomment in usercomment_list:
+                usercomment.is_read = False
             userfollow_list=userfollow_list.filter(is_read=False)
             userthumb_list=userthumb_list.filter(is_read=False)
             usernotice_list=usernotice_list.filter(is_read=False)
@@ -634,15 +688,57 @@ class MessagesView(View):
             usercomment_list=[]
             for usercomment in usercomment_list_copy:
                 if usercomment.comment_blog.author_id == request.user.id:
-                    if usercomment.author_read:
+                    if usercomment.author_read and not usercomment.author_del:
                         usercomment_list.append(usercomment)
                 else:
-                    if usercomment.listener_read:
+                    if usercomment.listener_read and not usercomment.listener_del:
                         usercomment_list.append(usercomment)
+            for usercomment in usercomment_list:
+                usercomment.is_read=True
             userfollow_list=userfollow_list.filter(is_read=True)
             userthumb_list=userthumb_list.filter(is_read=True)
             usernotice_list=usernotice_list.filter(is_read=True)
+        else:
+            usercomment_list_copy=usercomment_list[:]
+            usercomment_list=[]
+            for usercomment in usercomment_list_copy:
+                if usercomment.comment_blog.author == request.user and not usercomment.author_del:
+                    if usercomment.author_read:
+                        usercomment.is_read=True
+                    else:
+                        usercomment.is_read=False
+                    usercomment_list.append(usercomment)
+                elif usercomment.comment_blog.author != request.user and not usercomment.listener_del:
+                    if usercomment.listener_read:
+                        usercomment.is_read=True
+                    else:
+                        usercomment.is_read=False
+                    usercomment_list.append(usercomment)
+        #把所有数据放到一起，以便于分页
+        data_list=[]
+        for usercomment in usercomment_list:
+            usercomment.type = 'c'
+            data_list.append(usercomment)
+        for usernotice in usernotice_list:
+            usernotice.type= 'n'
+            data_list.append(usernotice)
+        for userthumb in userthumb_list:
+            userthumb.type = 't'
+            data_list.append(userthumb)
+        for userfollow in userfollow_list:
+            userfollow.type = 'f'
+            data_list.append(userfollow)
         
-        return render(request,'users/personal-center-messages.html',{'userfollow_list':userfollow_list,'userthumb_list':userthumb_list,'usercomment_list':usercomment_list,'usernotice_list':usernotice_list,'sort':sort,'read':read,'follow_num':follow_num,'notice_num':notice_num,'thumb_num':thumb_num,'comment_num':comment_num})
+        #分页
+        pa=Paginator(data_list,20)
+        pagenum=request.GET.get('pagenum','')
+        try:
+            current_page=pa.get_page(pagenum)
+        except PageNotAnInteger:
+            current_page=pa.get_page(1)
+        except EmptyPage:
+            current_page=pa.get_page(pa.num_pages)
+        
+        return render(request,'users/personal-center-messages.html',{'userfollow_list':userfollow_list,'userthumb_list':userthumb_list,'usercomment_list':usercomment_list,'usernotice_list':usernotice_list,'sort':sort,'read':read,'follow_num':follow_num,'notice_num':notice_num,'thumb_num':thumb_num,'comment_num':comment_num,'current_page':current_page})
             
         

@@ -16,51 +16,64 @@
 <!--下面是消息区域-->
 <section id="main">
         <ul id='blogs-sort'>
-            <li {% if read == 'no'%}class='active2'{% endif %}><a href="?read=no&sort={{sort}}">未读↓</a></li>
-            <li {% if read == 'yes'%}class='active2'{% endif %}><a href="?read=yes&sort={{sort}}">已读↓</a></li>
-            <li {% if read == 'all'%}class='active2'{% endif %}><a href="?read=all&sort={{sort}}">全部↓</a></li>
+            <li {% if read == 'no'%}class='active2'{% endif %}><a href="?read=no&sort={{sort}}&pagenum=">未读↓</a></li>
+            <li {% if read == 'yes'%}class='active2'{% endif %}><a href="?read=yes&sort={{sort}}&pagenum=">已读↓</a></li>
+            <li {% if read == 'all'%}class='active2'{% endif %}><a href="?read=all&sort={{sort}}&pagenum=">全部↓</a></li>
         </ul>
     <!--下面是中间展示的消息-->   
         <div id='blogs-display'>
-            {% for usernotice in usernotice_list %}
+            {% for data in current_page %}
+            {% if data.type == 'n'%}
             <dl>
-                <dt class='msg-title'>系统通知[{{usernotic.addtime}}]<a class='read-msg'>[标为已读]</a><a class='delete-msg'>[删除]</a></dt>
-                <dd>{{usernotice.notice_content}}</dd>
+                <dt class='msg-title'>系统通知[{{data.addtime}}]{% if not data.is_read%}<a class='read-msg' mid={{data.id}} mtype={{data.type}}>[标为已读]</a>{% endif %}<a class='delete-msg' mid={{data.id}} mtype={{data.type}}>[删除]</a></dt>
+                <dd>{{data.notice_content}}</dd>
             </dl>
-            {% endfor %}
-            {% for usercomment in usercomment_list%}
+            {% elif data.type == 'c' %}
             <dl>
-                <dt class='msg-title'><a>{{usercomment.speaker.nickname}}评论了你的博文《{{usercomment.comment_blog.blog_title}}》[{{usercomment.addtime}}]</a><a class='read-msg'>[标为已读]</a><a class='delete-msg'>[删除]</a></dt>
-                <dd><a>{{usercomment.comment_content}}</a></dd>
+                <dt class='msg-title'><a>{{data.speaker.nickname}}评论了你的博文《{{data.comment_blog.blog_title}}》[{{data.addtime}}]</a>{% if not data.is_read%}<a class='read-msg' mid={{data.id}} mtype={{data.type}}>[标为已读]</a>{% endif %}<a class='delete-msg' mid={{data.id}} mtype={{data.type}}>[删除]</a></dt>
+                <dd><a>{{data.comment_content}}</a></dd>
             </dl>
-            {% endfor %}
+            {% elif data.type == 'f' %}
+            <dl>
+                <dt class='msg-title'><a href='personal-center-followers.html'>{{data.oneself.nickname}}关注了你&nbsp;[{{data.addtime}}]</a>{% if not data.is_read %}<a class='read-msg' mid={{data.id}} mtype={{data.type}}>[标为已读]</a>{% endif %}<a class='delete-msg' mid={{data.id}} mtype={{data.type}}>[删除]</a></dt>
+                <dd>去看看他的主页吧<a href="{% url 'blogs:blog_list' data.oneself.id%}" class='his-page'>{{data.oneself.nickname}}</a></dd>
+            </dl>
+            {% elif data.type == 't'%}
+            <dl>
+                <dt class='msg-title'>{{data.oneself.nickname}}点赞了你的博文《{{data.thumbup_blog.blog_title}}》[{{data.addtime}}]{% if not data.is_read %}<a class='read-msg' mid={{data.id}} mtype={{data.type}}>[标为已读]</a>{% endif %}<a class='delete-msg' mid={{data.id}} mtype={{data.type}}>[删除]</a></dt>
+                <dd>去看看他的主页吧<a href="{% url 'blogs:blog_list' data.oneself.id%}" class='his-page'>{{data.oneself.nickname}}</a></dd>
+            </dl>
+            {% endif %}
 
-            {% for userfollow in userfollow_list%}
-            <dl>
-                <dt class='msg-title'><a href='personal-center-followers.html'>{{userfollow.oneself.nickname}}关注了你&nbsp;[{{userfollow.addtime}}]</a><a class='read-msg'>[标为已读]</a><a class='delete-msg'>[删除]</a></dt>
-                <dd>去看看他的主页吧<a href="{% url 'blogs:blog_list' userfollow.oneself.id%}" class='his-page'>{{userfollow.oneself.nickname}}</a></dd>
-            </dl>
             {% endfor %}
             
-            {% for userthumb in userthumb_list%}
-            <dl>
-                <dt class='msg-title'>{{userthumb.oneself.nickname}}点赞了你的博文《{{userthumb.thumbup_blog.blog_title}}》[{{userthumb.addtime}}]<a class='read-msg'>[标为已读]</a><a class='delete-msg'>[删除]</a></dt>
-                <dd>去看看他的主页吧<a href="{% url 'blogs:blog_list' userthumb.oneself.id%}" class='his-page'>{{userthumb.oneself.nickname}}</a></dd>
-            </dl>
-            {% endfor %}
-            
+
+          
+            <div id='pagebox'>
+                    <ul id='pagelist'>
+                        {% if current_page.has_previous%}
+                        <a href="?pagenum={{current_page.previous_page_number}}&sort={{sort}}&read={{read}}"><li class='long'>上一页</li></a>
+                        {% endif %}
+                        {% for pagenum in current_page.paginator.page_range%}
+                        <a href="?pagenum={{pagenum}}&sort={{sort}}&read={{read}}"><li {% if pagenum == current_page.number %}class='short chosen'{% else %}class='short'{% endif %}>{{pagenum}}</li></a>
+                        {% endfor %}
+                        {% if current_page.has_next %}
+                        <a href="pagenum={{current_page.next_page_number}}&sort={{sort}}&read={{read}}"><li class='long'>下一页</li></a>
+                        {% endif %}
+                    </ul>
+                </div>
         </div>
          
-    </div><!--这是middle的结尾-->
+    
     
     <!--下面是右侧消息分类-->
     <div id='right'>
         <h3>消息分类</h3>
         <ul>
-            <li {% if sort == 'comment'%}class='active1'{% endif %}><a href="?sort=comment&read={{read}}">评论{% if comment_num%}<span class='badge'>{{comment_num}}</span>{% endif %}</a></li>
-            <li {% if sort == 'thumb'%}class='active1'{% endif %}><a href="?sort=thumb&read={{read}}">点赞{% if thumb_num%}<span class='badge'>{{thumb_num}}</span>{% endif %}</a></li>
-            <li {% if sort == 'follow'%}class='active1'{% endif %}><a href="?sort=follow&read={{read}}">关注{% if follow_num%}<span class='badge'>{{follow_num}}</span>{% endif %}</a></li>
-            <li {% if sort == 'notice'%}class='active1'{% endif %}><a href="?sort=notice&read={{read}}">系统通知{% if notice_num %}<span class='badge'>{{notice_num}}</span>{% endif %}</a></li>
+            <li {% if sort == 'comment'%}class='active1'{% endif %}><a href="?sort=comment&read={{read}}&pagenum=">评论{% if comment_num%}<span class='badge'>{{comment_num}}</span>{% endif %}</a></li>
+            <li {% if sort == 'thumb'%}class='active1'{% endif %}><a href="?sort=thumb&read={{read}}&pagenum=">点赞{% if thumb_num%}<span class='badge'>{{thumb_num}}</span>{% endif %}</a></li>
+            <li {% if sort == 'follow'%}class='active1'{% endif %}><a href="?sort=follow&read={{read}}&pagenum=">关注{% if follow_num%}<span class='badge'>{{follow_num}}</span>{% endif %}</a></li>
+            <li {% if sort == 'notice'%}class='active1'{% endif %}><a href="?sort=notice&read={{read}}&pagenum=">系统通知{% if notice_num %}<span class='badge'>{{notice_num}}</span>{% endif %}</a></li>
         </ul>
     </div>
         
@@ -74,9 +87,55 @@ $(function(){
  var len = $('#blogs-display').children('dl').length;
  if(len==0){
      var new_dl=$("<dl><dt class='msg-title'>暂无消息</dt><dd>去<a href='/' style='font-weight:bold;text-decoration:underline;'>博客广场</a>看看吧</dd></dl>")
-     $('#blogs-display').append(new_dl);
+     new_dl.insertBefore($('#pagebox'))
  }
+//下面是把消息标为已读的功能
+ $('.read-msg').click(function(){
+     var mid=$(this).attr('mid');
+     var mtype=$(this).attr('mtype');
+     console.log(mid)
+     console.log(mtype)
+     $.ajax({
+         type:'GET',
+         url:"{% url 'operations:read'%}",
+         data:{
+             mid:mid,
+             mtype:mtype,
+         },
+         success:function(callback){
+             if(callback.status == 'ok'){
+                 alert(callback.msg)
+                 window.location.reload()
+             }
+             else{
+                 alert(callback.msg)
+             }
+         }
+     })
+ })
 
+//下面是删除消息的功能
+$('.delete-msg').click(function(){
+    var mid=$(this).attr('mid');
+    var mtype=$(this).attr('mtype');
+    $.ajax({
+        type:'GET',
+        url:"{% url 'operations:delete_msg'%}",
+        data:{
+            mid:mid,
+            mtype:mtype
+        },
+        success:function(callback){
+           if(callback.status=='ok'){
+               alert(callback.msg);
+               window.location.reload()
+           }
+           else{
+               alert(callback.msg)
+           }
+        }
+    })
+})
 })//这是最外面的function的结尾
 </script>
 {% endblock myjs%}

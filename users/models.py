@@ -35,11 +35,11 @@ class UserProfile(AbstractUser):
         usercomment_list=UserComment.objects.filter(Q(listener_id=self.id)|Q(comment_blog__in=blog_list),is_delete=False)
         comment_num=0
         for comment in usercomment_list:
-            if comment.comment_blog.author == request.user:
-                if not author_read:
+            if comment.comment_blog.author == self:
+                if not comment.author_read and not comment.author_del:
                     comment_num+=1
             else:
-                if not listener_read:
+                if not commment.listener_read and not comment.lisenter_del:
                     comment_num+=1
         return follow_num+notice_num+thumb_num+comment_num
 

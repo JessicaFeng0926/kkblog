@@ -41,8 +41,14 @@
 					</form>
 				</dd>
 				<dd class='comment'>
-					<p><a>李鑫一</a><a>@高嘉朗：</a>我滴朗哥哥，你也开始学Python啦！</p>
-					<p><a>高嘉朗：</a>写得很棒！</p>
+					{% for usercomment in usercomment_list%}
+					{% if usercomment.listener == blog.author %}
+                    <p><a href="{% url 'blogs:blog_list' usercomment.speaker.id %}">{{usercomment.speaker.nickname}}：</a>{{usercomment.comment_content}}</p>
+					{% else %}
+					<p><a href="{% url 'blogs:blog_list' usercomment.speaker.id %}">{{usercomment.speaker.nickname}}</a><a href="{% url 'blogs:blog_list' usercomment.listener_id%}">@{{usercomment.listener.nickname}}：</a>{{usercomment.comment_content}}</p>
+					{% endif %}
+					{% endfor %}
+					
 				</dd>
 			</dl>
 		 
@@ -67,6 +73,15 @@
 	</div>
 		
 	</section>
+	<footer>
+		<a href="/"><img src="{% static 'img/logo.jpg'%}" id='footlogo'/></a>
+		<div id="">
+			<img src="{% static 'img/qrcode.png'%}" id='qrcode'/>
+			<div>联系我们</div>
+		</div>
+		<p>Copyright&nbsp;&copy;&nbsp;kkblog&nbsp;2019-2029</p>
+		
+	</footer>
 {% endblock content %}
 
 {% block myjs%}
