@@ -2,7 +2,8 @@ from django.shortcuts import render,redirect,reverse
 from django.views import View
 from .models import UserThumbup,UserFollow,UserCollect,UserComment,UserNotice
 from users.models import UserProfile
-from blogs.models import CollectBookMark
+from blogs.models import CollectBookMark,Blog
+from .forms import NewCommentForm
 from django.http import JsonResponse
 
 # Create your views here.
@@ -259,3 +260,46 @@ class DeleteMsgView(View):
             return JsonResponse({'status':'ok','msg':'消息删除成功'})
         else:
             return JsonResponse({'status':'fail','msg':'操作失败'})
+
+class CommentView(View):
+    '''这是用户评论的视图类'''
+    def post(self,request):
+        newcomment_form=NewCommentForm(request.POST)
+        if newcomment_form.is_valid():
+            lid=newcomment_form.cleaned_data['lid']
+            comment_blog_id=newcomment_form.cleaned_data['comment_blog_id']
+            comment_content=newcomment_form.cleaned_data['comment_content']
+            if not lid:
+                lid=Blog.objects.filter(id=int(comment_blog_id))[0].author_id
+            newcomment=UserComment()
+            newcomment.speaker=request.user
+            newcomment.listener_id=lid
+            newcomment.comment_blog_id=int(comment_blog_id)
+            newcomment.comment_content=comment_content
+            newcomment.save()
+            #给博主的评论数加一
+            newcomment.comment_blog.author.comment_num+=1
+            newcomment.comment_blog.author.save()
+            return JsonResponse({'status':'ok','msg':'评论成功'})
+
+        else:
+            error=''
+            for k,v in newcomment_form.errors.items():
+                error=error+v+','
+
+            return JsonResponse({'status':'fail','msg':error})
+
+class DeleteCommentView(View):
+    '''这是博主删除评论的视图'''
+    def get(self,request):
+        cid=request.GET.get('cid','')
+        if cid:
+            usercomment=UserComment.objects.filter(id=int(cid))[0]
+            usercomment.is_delete=True
+            usercomment.save()
+            #博主的评论数减一
+            usercomment.comment_blog.author.comment_num-=1
+            usercomment.comment_blog.author.save()
+            return JsonResponse({'status':'ok','msg':'评论删除成功'})
+        else:
+            return JsonResponse({'status':'fail','msg':'评论删除失败'})

@@ -16,6 +16,10 @@ urlpatterns=[
     re_path(r'^reset/(\w+)$',views.UserResetView.as_view(),name='reset'),
     #个人中心首页
     re_path(r'^personal_center/$',views.UserPersonalCenterView.as_view(),name='pc'),
+    #更换邮箱
+    re_path(r'^change_email/$',views.ChangeEmailView.as_view(),name='change_email'),
+    #确认新邮箱
+    re_path(r'^confirm_email/$',views.ConfirmEmailView.as_view(),name='confirm_email'),
     #我的博客
     re_path(r'^myblogs/$',views.MyblogsView.as_view(),name='myblogs'),
     #我的博客详情

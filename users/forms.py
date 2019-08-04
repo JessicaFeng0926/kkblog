@@ -70,6 +70,19 @@ class UserPersonalCenterForm(forms.ModelForm):
             else:
                 raise forms.ValidationError('手机号码不合法')
 
+class ChangeEmailForm(forms.Form):
+    '''这是修改邮箱的表单类'''
+    email=forms.EmailField(required=True,
+    error_messages={
+        'required':'邮箱不能为空'
+    })
+    password=forms.CharField(required=True,min_length=3,max_length=15,
+    error_messages={
+        'required':'密码不能为空',
+        'min_length':'密码不能少于3位',
+        'max_length':'密码不能多于15位'
+    })
+
 class NewTopicForm(forms.Form):
     '''这是新建主题的表单类'''
     topic_name=forms.CharField(required=True,max_length=30,

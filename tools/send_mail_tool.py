@@ -35,5 +35,10 @@ def send_email_code(email,send_type):
         send_body='请点击下面的链接重置密码：\n'+'http://127.0.0.1:8000/users/reset/'+code+'\n注意：链接有效时长为5分钟，重置完成会自动跳转到登录页面。'
         send_mail(send_title,send_body,EMAIL_FROM,[email])
 
+    if send_type==3:
+        send_title='kkblog修改邮箱'
+        send_body='您此次修改邮箱的验证码是:\n'+code+'\n注意，验证码的有效时长是5分钟，验证完成会跳转到登录页面。'
+        send_mail(send_title,send_body,EMAIL_FROM,[email])
+
 
 

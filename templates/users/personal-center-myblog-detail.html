@@ -21,15 +21,21 @@
 		            <dd class='input-comment'>
 		            	<form>
 							<div class="form-group">
-							  <input type="email" class="form-control" id="exampleInputEmail1" placeholder="您可以在这里输入您的评论">
+                              <input type="text" class="form-control" id="inputcomment" placeholder="您可以在这里输入您的评论">
+                              {% csrf_token %}
 							</div>
   
-                            <button type="submit" class="btn btn-default" id='comment-btn'>评论</button>
+                            <button type="button" class="btn btn-default" id='comment-btn'>评论</button>
                         </form>
 		            </dd>
 		            <dd class='comment'>
-		            	<p><a>李鑫一</a><a>@高嘉朗：</a>我滴朗哥哥，你也开始学Python啦！</p>
-		                <p><a>高嘉朗：</a>写得很棒！</p>
+                        {% for usercomment in usercomment_list%}
+                        {% if usercomment.listener == blog.author%}
+                        <p><a href="{% url 'blogs:blog_list' usercomment.speaker.id%}" {% if usercomment.speaker.nickname%}title="{{usercomment.speaker.nickname}}"{%else%}title="{{usercomment.speaker.username}}"{%endif %}>{% if usercomment.speaker.nickname%}{{usercomment.speaker.nickname|slice:':8'}}{%else%}{{usercomment.speaker.username|slice:':8'}}{%endif%}：</a>{{usercomment.comment_content}}[{{usercomment.addtime}}]<span class='reply' lid={{usercomment.speaker.id}} {%if usercomment.speaker.nickname%}lname="{{usercomment.speaker.nickname}}"{% else %}lname="{{usercomment.speaker.username}}"{%endif%}>[回复]</span><span class='delete-c' cid="{{usercomment.id}}">[删除]</span></p>
+                        {% else %}
+		            	<p><a href="{% url 'blogs:blog_list' usercomment.speaker.id%}" {% if usercomment.speaker.nickname%}title="{{usercomment.speaker.nickname}}"{%else%}title="{{usercomment.speaker.username}}"{% endif %}>{% if usercomment.speaker.nickname%}{{usercomment.speaker.nickname|slice:':8'}}{% else%}{{usercomment.speaker.username|slice:':8'}}{%endif%}</a><a href="{% url 'blogs:blog_list' usercomment.listener_id%}" {%if usercomment.listener.nickname%}title="{{usercomment.listener.nickname}}"{%else%}title="{{usercomment.listener.username}}"{% endif %}>@{%if usercomment.listener.nickname%}{{usercomment.listener.nickname|slice:':8'}}{%else%}{{usercomment.listener.username|slice:':8'}}{%endif%}：</a>{{usercomment.comment_content}}[{{usercomment.addtime}}]<span class='reply' lid="{{usercomment.speaker.id}}" {%if usercomment.speaker.nickname%}lname="{{usercomment.speaker.nickname}}"{%else%}lname="{{usercomment.speaker.username}}"{%endif%}>[回复]</span><span class='delete-c' cid="{{usercomment.id}}">[删除]</span></p>
+                        {% endif %}
+                        {% endfor %}
 		            </dd>
 		        </dl>
 		        
@@ -71,6 +77,7 @@
 
 {% block myjs %}
 <script src="{% static 'js/personal-center-myblogs.js'%}" type="text/javascript" charset="utf-8"></script>
+<script src="{% static 'js/personal-center-myblog-detail.js'%}"></script>
 <script>
 $(function(){
    //删除主题
@@ -119,6 +126,68 @@ $(function(){
            }
         })
     })
+
+    //下面是评论功能
+    var lid=''
+    $('.reply').click(function(){
+        lid=$(this).attr('lid');
+        var lname=$(this).attr('lname');
+        $('#inputcomment').attr('placeholder','回复@'+lname);
+    })
+    
+    $('#comment-btn').click(function(){
+        var comment_content=$('#inputcomment').val();
+        var comment_blog_id="{{blog.id}}";
+        $.ajax({
+            type:'POST',
+            url:"{% url 'operations:comment'%}",
+            data:{
+                lid:lid,
+                comment_content:comment_content,
+                comment_blog_id:comment_blog_id,
+                csrfmiddlewaretoken:"{{csrf_token}}",
+            },
+            success:function(callback){
+                if(callback.status == 'ok'){
+                    alert(callback.msg);
+                    window.location.reload()
+                }
+                else{
+                    alert(callback.msg);
+                }
+            }
+
+        })
+    })//这是评论功能的结尾
+
+    //下面是删除评论的功能
+    $('.delete-c').click(function(){
+       var cid=$(this).attr('cid');
+       var p = $(this).parent('p');
+       var c = confirm('确定要删除该评论吗？');
+       if(c==true){
+        $.ajax({
+        type:'GET',
+        url:"{% url 'operations:delete_comment'%}",
+        data:{
+            cid:cid,
+        },
+        success:function(callback){
+            if(callback.status=='ok'){
+                alert(callback.msg);
+                p.remove()
+            }
+            else{
+                alert(callback.msg)
+            }
+        }
+       })//这是ajax的结尾
+
+    }//这是确认的结尾
+       
+
+    })//这是删除评论的结尾
+
 })//这是最外面的function的结尾
 </script>
 {% endblock myjs %}

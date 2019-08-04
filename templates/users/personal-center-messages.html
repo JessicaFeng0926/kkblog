@@ -30,17 +30,17 @@
             </dl>
             {% elif data.type == 'c' %}
             <dl>
-                <dt class='msg-title'><a>{{data.speaker.nickname}}评论了你的博文《{{data.comment_blog.blog_title}}》[{{data.addtime}}]</a>{% if not data.is_read%}<a class='read-msg' mid={{data.id}} mtype={{data.type}}>[标为已读]</a>{% endif %}<a class='delete-msg' mid={{data.id}} mtype={{data.type}}>[删除]</a></dt>
-                <dd><a>{{data.comment_content}}</a></dd>
+                <dt class='msg-title'><a href="{% url 'blogs:blog_detail' data.comment_blog_id%}">{% if data.speaker.nickname%}{{data.speaker.nickname|slice:':8'}}{% else%}{{data.speaker.username|slice:':8'}}{% endif %}评论了博文《{{data.comment_blog.blog_title}}》[{{data.addtime}}]</a>{% if not data.is_read%}<a class='read-msg' mid={{data.id}} mtype={{data.type}}>[标为已读]</a>{% endif %}<a class='delete-msg' mid={{data.id}} mtype={{data.type}}>[删除]</a></dt>
+                <dd><a href="{% url 'blogs:blog_detail' data.comment_blog_id%}">{{data.comment_content}}</a></dd>
             </dl>
             {% elif data.type == 'f' %}
             <dl>
-                <dt class='msg-title'><a href='personal-center-followers.html'>{{data.oneself.nickname}}关注了你&nbsp;[{{data.addtime}}]</a>{% if not data.is_read %}<a class='read-msg' mid={{data.id}} mtype={{data.type}}>[标为已读]</a>{% endif %}<a class='delete-msg' mid={{data.id}} mtype={{data.type}}>[删除]</a></dt>
-                <dd>去看看他的主页吧<a href="{% url 'blogs:blog_list' data.oneself.id%}" class='his-page'>{{data.oneself.nickname}}</a></dd>
+                <dt class='msg-title'><a href="{% url 'users:myfollow'%}">{% if data.oneself.nickname%}{{data.oneself.nickname|slice:':8'}}{% else %}{{data.oneself.username|slice:':8'}}{% endif %}关注了你&nbsp;[{{data.addtime}}]</a>{% if not data.is_read %}<a class='read-msg' mid={{data.id}} mtype={{data.type}}>[标为已读]</a>{% endif %}<a class='delete-msg' mid={{data.id}} mtype={{data.type}}>[删除]</a></dt>
+                <dd>去看看他的主页吧<a href="{% url 'blogs:blog_list' data.oneself.id%}" class='his-page'>{% if data.oneself.nickname %}{{data.oneself.nickname}}{% else %}{{data.oneself.username}}{% endif %}</a></dd>
             </dl>
             {% elif data.type == 't'%}
             <dl>
-                <dt class='msg-title'>{{data.oneself.nickname}}点赞了你的博文《{{data.thumbup_blog.blog_title}}》[{{data.addtime}}]{% if not data.is_read %}<a class='read-msg' mid={{data.id}} mtype={{data.type}}>[标为已读]</a>{% endif %}<a class='delete-msg' mid={{data.id}} mtype={{data.type}}>[删除]</a></dt>
+                <dt class='msg-title'>{% if data.oneself.nickname%}{{data.oneself.nickname|slice:':8'}}{% else %}{{data.oneself.username|slice:':8'}}{% endif %}点赞了你的博文《{{data.thumbup_blog.blog_title}}》[{{data.addtime}}]{% if not data.is_read %}<a class='read-msg' mid={{data.id}} mtype={{data.type}}>[标为已读]</a>{% endif %}<a class='delete-msg' mid={{data.id}} mtype={{data.type}}>[删除]</a></dt>
                 <dd>去看看他的主页吧<a href="{% url 'blogs:blog_list' data.oneself.id%}" class='his-page'>{{data.oneself.nickname}}</a></dd>
             </dl>
             {% endif %}

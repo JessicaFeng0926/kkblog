@@ -229,3 +229,24 @@ h3{
     font-size: 0.08rem;
     list-style: none;
 }
+
+/* 下面是评论的回复和删除按钮样式 */
+.reply{
+    color:cornflowerblue;
+    display:none;
+}
+
+.delete-c{
+    color:cornflowerblue;
+    display: none;
+}
+
+.reply:hover{
+    color:blue;
+    cursor: pointer;
+}
+
+.delete-c:hover{
+    color:blue;
+    cursor: pointer;
+}

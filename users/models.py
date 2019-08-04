@@ -39,7 +39,7 @@ class UserProfile(AbstractUser):
                 if not comment.author_read and not comment.author_del:
                     comment_num+=1
             else:
-                if not commment.listener_read and not comment.lisenter_del:
+                if not comment.listener_read and not comment.listener_del:
                     comment_num+=1
         return follow_num+notice_num+thumb_num+comment_num
 

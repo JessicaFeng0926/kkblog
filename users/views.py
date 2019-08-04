@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,reverse
 from django.views import View
-from .forms import UserRegisterForm,UserLoginForm,UserForgetForm,UserResetForm,UserPersonalCenterForm,NewTopicForm,NewBookmarkForm,NewBlogForm
+from .forms import UserRegisterForm,UserLoginForm,UserForgetForm,UserResetForm,UserPersonalCenterForm,NewTopicForm,NewBookmarkForm,NewBlogForm,ChangeEmailForm
 from .models import UserProfile,EmailVerifyCode
 from blogs.models import Topic,CollectBookMark,Blog
 from operations.models import UserThumbup,UserFollow,UserCollect,UserComment,UserNotice
@@ -263,6 +263,36 @@ class UserPersonalCenterView(View):
         else:
             return render(request,'users/personal-center.html',{'user_pc_form':user_pc_form,'msg':'修改失败'})
 
+class ChangeEmailView(View):
+    '''这是修改邮箱的视图类'''
+    def get(self,request):
+        return render(request,'users/change-email.html')
+    def post(self,request):
+        changeemail_form=ChangeEmailForm(request.POST)
+        if changeemail_form.is_valid():
+            email=changeemail_form.cleaned_data['email']
+            password=changeemail_form.cleaned_data['password']
+            user_list=UserProfile.objects.filter(email=email)
+            if user_list:
+                return render(request,'users/change-email.html',{'changeemail_form':changeemail_form,'msg':'邮箱已经被占用'})
+            else:
+                user=authenticate(username=request.user.username,password=password)
+                if user:
+                    send_email_code(email,3)
+                    return redirect(reverse('users:confirm_email'))
+                else:
+                    return render(request,'users/change-email.html',{'changeemail_form':changeemail_form,'msg':'密码错误'})
+
+        else:
+            return render(request,'users/change-email.html',{'changeemail_form':changeemail_form})
+
+class ConfirmEmailView(View):
+    '''这是确认修改邮箱的视图类'''
+    def get(self,request):
+        return render(request,'users/confirm-email.html')
+    def post(self,request):
+        pass
+
 def get_data_list(user):
     '''这是我的博客页面获取需要的所有信息的函数'''
     topic_list=Topic.objects.filter(owner=user,is_delete=False).order_by('addtime')
@@ -309,7 +339,7 @@ def get_data_list(user):
         #别忘了最后还要append一次，因为最后的那个年和月不会再有别的年月跟它比较了，走不到else分支，所以没办法在循环内append
         time_list.append([year,month,count])
         time_list.reverse()
-    print(time_list)
+    
     blog_list=blog_list.order_by('-addtime')
     return [topic_list,blog_list,time_list]
 
@@ -387,7 +417,13 @@ class MyBlogDetailView(View):
                 user_thumbup_list=UserThumbup.objects.filter(oneself=request.user,thumbup_blog=blog,tstatus=True)
                 if user_thumbup_list:
                     tstatus=True
-                return render(request,'users/personal-center-myblog-detail.html',{'blog':blog,'topic_list':topic_list,'time_list':time_list,'tstatus':tstatus})
+
+                #获取本篇博客的所有评论
+                usercomment_list=UserComment.objects.filter(comment_blog=blog,is_delete=False).order_by('-addtime')
+                for usercomment in usercomment_list:
+                    usercomment.listener=UserProfile.objects.filter(id=usercomment.listener_id)[0]
+
+                return render(request,'users/personal-center-myblog-detail.html',{'blog':blog,'topic_list':topic_list,'time_list':time_list,'tstatus':tstatus,'usercomment_list':usercomment_list})
             else:
                 return redirect(reverse('users:myblogs'))
 

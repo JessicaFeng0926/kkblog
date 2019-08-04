@@ -156,7 +156,7 @@ class BlogDetailView(View):
                     time_list=data_list[2]
 
                     #查看本篇博客的所有评论
-                    usercomment_list=UserComment.objects.filter(comment_blog=blog,is_delete=False)
+                    usercomment_list=UserComment.objects.filter(comment_blog=blog,is_delete=False).order_by('-addtime')
                     for usercomment in usercomment_list:
                         usercomment.listener=UserProfile.objects.filter(id=usercomment.listener_id)[0]
 

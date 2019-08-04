@@ -14,4 +14,8 @@ urlpatterns=[
     re_path(r'^read/$',views.ReadView.as_view(),name='read'),
     #下面是用户删除消息的路由
     re_path(r'^delete_msg/$',views.DeleteMsgView.as_view(),name='delete_msg'),
+    #下面是用户评论的路由
+    re_path(r'^comment/$',views.CommentView.as_view(),name='comment'),
+    #下面是博主删除评论的路由
+    re_path(r'^delete_comment/$',views.DeleteCommentView.as_view(),name='delete_comment'),
 ]

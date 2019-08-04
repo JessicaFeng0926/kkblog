@@ -246,3 +246,23 @@ footer div{
 }
 
 
+/* 下面是回复和删除评论的按钮的样式 */
+.reply{
+	color:cornflowerblue;
+	display:none;
+}
+
+.delete-c{
+	color:cornflowerblue;
+	display:none;
+}
+
+.reply:hover{
+	color:blue;
+	cursor: pointer;
+}
+
+.delete-c:hover{
+	color:blue;
+	cursor: pointer;
+}
