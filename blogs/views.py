@@ -6,6 +6,7 @@ from operations.models import UserFollow,UserThumbup,UserCollect,UserComment
 from django.http import JsonResponse
 from users.views import get_data_list
 from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
+from tools.decorator import login_decorator
 # Create your views here.
 
 class DeleteTopicView(View):
@@ -44,8 +45,10 @@ class DeleteBlogView(View):
         else:
             return JsonResponse({'status':'fail','msg':'博客删除失败'})
 
+
 class BlogListView(View):
     '''这是某位博主的所有博客列表页的视图类'''
+    @login_decorator
     def get(self,request,author_id):
         if author_id:
             #判断访问者和要访问的博主是否是统一个人
@@ -112,8 +115,10 @@ class BlogListView(View):
                 else:
                     return redirect(reverse('index'))
 
+
 class BlogDetailView(View):
     '''这是博客详情页的视图类'''
+    @login_decorator
     def get(self,request,blog_id):
         if blog_id:
             blog_list=Blog.objects.filter(id=int(blog_id),is_delete=False)

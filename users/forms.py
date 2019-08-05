@@ -83,6 +83,19 @@ class ChangeEmailForm(forms.Form):
         'max_length':'密码不能多于15位'
     })
 
+class ConfirmEmailForm(forms.Form):
+    '''这是确认修改邮箱的表单类'''
+    email=forms.EmailField(required=True,
+    error_messages={
+        'required':'邮箱不能为空'
+    })
+    code=forms.CharField(required=True,min_length=8,max_length=8,
+    error_messages={
+        'required':'验证码不能为空',
+        'min_length':'验证码为8位',
+        'max_length':'验证码为8位',
+    })
+
 class NewTopicForm(forms.Form):
     '''这是新建主题的表单类'''
     topic_name=forms.CharField(required=True,max_length=30,

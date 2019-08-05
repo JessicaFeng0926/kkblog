@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,reverse
 from django.views import View
-from .forms import UserRegisterForm,UserLoginForm,UserForgetForm,UserResetForm,UserPersonalCenterForm,NewTopicForm,NewBookmarkForm,NewBlogForm,ChangeEmailForm
+from .forms import UserRegisterForm,UserLoginForm,UserForgetForm,UserResetForm,UserPersonalCenterForm,NewTopicForm,NewBookmarkForm,NewBlogForm,ChangeEmailForm,ConfirmEmailForm
 from .models import UserProfile,EmailVerifyCode
 from blogs.models import Topic,CollectBookMark,Blog
 from operations.models import UserThumbup,UserFollow,UserCollect,UserComment,UserNotice
@@ -10,6 +10,7 @@ from tools.send_mail_tool import send_email_code
 from django.http import HttpResponse
 from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 from datetime import datetime
+from tools.decorator import login_decorator
 # Create your views here.
 
 def index(request):
@@ -67,7 +68,14 @@ class UserLoginView(View):
             if user:
                 if user.is_avd:
                     login(request,user)
-                    return redirect(reverse('index'))
+                    #从cookie中取出保存的网址，如果没有就给它主页的网址
+                    url=request.COOKIES.get('url','/')
+                    
+                    ret=redirect(url)
+                    ret.delete_cookie('url')
+                    return ret
+                        
+                    
                 #对于没有激活的账号，先看看数据库里有没有用于激活的数据
                 else:
                     evc_list=EmailVerifyCode.objects.filter(email=email,send_type=1)
@@ -277,9 +285,27 @@ class ChangeEmailView(View):
                 return render(request,'users/change-email.html',{'changeemail_form':changeemail_form,'msg':'邮箱已经被占用'})
             else:
                 user=authenticate(username=request.user.username,password=password)
+                #如果密码正确
                 if user:
-                    send_email_code(email,3)
-                    return redirect(reverse('users:confirm_email'))
+                    #看看是否已经有发送记录
+                    evc_list=EmailVerifyCode.objects.filter(email=email,send_type=3)
+                    #如果已经发送过，看看时间间隔是否在一分钟之内
+                    if evc_list:
+                        evc=evc_list[0]
+                        #如果时间间隔小于1分钟
+                        if (datetime.now()-evc.addtime).seconds<60:
+                            return render(request,'users/change-email.html',{'changeemail_form':changeemail_form,'msg':'验证码已经发送至您的新邮箱，请1分钟后再试'})
+                        #如果时间间隔大于1分钟
+                        else:
+                            evc.delete()
+                            send_email_code(email,3)
+                            return redirect(reverse('users:confirm_email'))
+
+                    #如果没发送过，直接发送
+                    else:
+                        send_email_code(email,3)
+                        return redirect(reverse('users:confirm_email'))
+                #如果密码不正确
                 else:
                     return render(request,'users/change-email.html',{'changeemail_form':changeemail_form,'msg':'密码错误'})
 
@@ -291,7 +317,34 @@ class ConfirmEmailView(View):
     def get(self,request):
         return render(request,'users/confirm-email.html')
     def post(self,request):
-        pass
+        confirmemail_form=ConfirmEmailForm(request.POST)
+        #如果格式正确
+        if confirmemail_form.is_valid():
+            email=confirmemail_form.cleaned_data['email']
+            code=confirmemail_form.cleaned_data['code']
+            evc_list=EmailVerifyCode.objects.filter(email=email,code=code,send_type=3)
+            if evc_list:
+                evc=evc_list[0]
+                #如果验证码在有效时长内
+                if (datetime.now()-evc.addtime).seconds<300:
+                    #修改用户的用户名和邮箱
+                    request.user.username=email
+                    request.user.email=email
+                    request.user.save()
+                    #删除已经使用过的验证码信息
+                    evc.delete()
+                    #退出登录
+                    logout(request)
+                    #重定向到登录界面
+                    return redirect(reverse('users:login'))
+                    
+                else:
+                    return render(request,'users/confirm-email.html',{'confirmemail_form':confirmemail_form,'msg':'验证码已过期，请重新发送'})
+            else:
+                return render(request,'users/confirm-email.html',{'confirmemail_form':confirmemail_form,'msg':'邮箱或验证码错误'})
+            
+        else:
+            return render(request,'users/confirm-email.html',{'confirmemail_form':confirmemail_form})
 
 def get_data_list(user):
     '''这是我的博客页面获取需要的所有信息的函数'''
@@ -556,6 +609,7 @@ class MyCollectionsView(View):
 
 class WriteBlogView(View):
     '''这是写博客的视图类'''
+    @login_decorator
     def get(self,request):
         #把用户的所有主题传过去
         topic_list=Topic.objects.filter(owner=request.user,is_delete=False)
@@ -648,8 +702,10 @@ class CollectionMoveView(View):
         else:
             return render(request,'users/personal-center-mycollection-move.html',{'usercollect':usercollect,'bookmark_list':bookmark_list,'new_bookmark_form':new_bookmark_form})
 
+
 class MessagesView(View):
     '''这是我的消息的视图类'''
+    @login_decorator
     def get(self,request):
         #所有的关注
         userfollow_list=UserFollow.objects.filter(idol_id=request.user.id,fstatus=True,is_delete=False).order_by('-addtime')
