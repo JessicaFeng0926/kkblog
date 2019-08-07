@@ -158,4 +158,4 @@ EMAIL_HOST_USER='something@qq.com'
 #我的授权码因为更改邮箱密码所以过期了
 EMAIL_HOST_PASSWORD='something'
 EMAIL_USE_TLS=True
-EMAIL_FROM='2276810913@qq.com'
+EMAIL_FROM='something@qq.com'
