@@ -154,8 +154,8 @@ MEDIA_ROOT=os.path.join(BASE_DIR,'static/media')
 EMAIL_HOST='smtp.qq.com'
 EMAIL_PORT=25
 #为了安全，删除了qq邮箱，每天第一件事记得加回来
-EMAIL_HOST_USER='2276810913@qq.com'
+EMAIL_HOST_USER='something@qq.com'
 #我的授权码因为更改邮箱密码所以过期了
-EMAIL_HOST_PASSWORD='ehayjedqavfteccf'
+EMAIL_HOST_PASSWORD='something'
 EMAIL_USE_TLS=True
 EMAIL_FROM='2276810913@qq.com'
