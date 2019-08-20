@@ -640,12 +640,17 @@ class EditBlogView(View):
             blog_list=Blog.objects.filter(id=int(blog_id),is_delete=False)
             if blog_list:
                 blog=blog_list[0]
-                #\r\n在js里会报错，所以这里把它们替换成空再传回前端
-                #换行效果依然存在，因为富文本里的每一段都用p标签包裹起来了，换行符实在是鸡肋
-                blog.blog_text=blog.blog_text.replace('\r\n','')
-                #把用户的主题列表也传回去
-                topic_list=Topic.objects.filter(owner=request.user,is_delete=False)
-                return render(request,'users/edit-blog.html',{'blog':blog,'topic_list':topic_list})
+
+                #如果当前用户不是博客的作者，重定向到写博客页面
+                if blog.author != request.user:
+                    return redirect(reverse('users:write_blog'))
+                else:
+                    #\r\n在js里会报错，所以这里把它们替换成空再传回前端
+                    #换行效果依然存在，因为富文本里的每一段都用p标签包裹起来了，换行符实在是鸡肋
+                    blog.blog_text=blog.blog_text.replace('\r\n','')
+                    #把用户的主题列表也传回去
+                    topic_list=Topic.objects.filter(owner=request.user,is_delete=False)
+                    return render(request,'users/edit-blog.html',{'blog':blog,'topic_list':topic_list})
             #如果博客不存在，重定向到我的博客列表页
             else:
                 return redirect(reverse('users:myblogs'))
