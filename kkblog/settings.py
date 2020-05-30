@@ -13,7 +13,9 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os,sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+# 这里获取的基本路径是manage.py所在的目录的路径，所以要套两层dirname
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 #把extra_apps文件夹的路径也添加进来，这样里面的xadmin就能被识别了
 sys.path.insert(0,os.path.join(BASE_DIR,'extra_apps'))
 
